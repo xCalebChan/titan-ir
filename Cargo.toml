@@ -1,0 +1,31 @@
+[package]
+name = "titan-ir"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[workspace]
+members = [
+    "crates/index-core",
+    "crates/lexical-engine",
+    "crates/dense-engine",
+    "crates/reranker",
+    "crates/server",
+]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+license = "MIT"
+version = "0.1.0"
+
+[[bench]]
+name = "query_latency"
+harness = false
+
+[dev-dependencies]
+criterion = "0.5"
+index-core = { path = "crates/index-core" }
+lexical-engine = { path = "crates/lexical-engine" }
+dense-engine = { path = "crates/dense-engine" }
+reranker = { path = "crates/reranker" }

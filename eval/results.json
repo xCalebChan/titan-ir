@@ -1,0 +1,26 @@
+{
+  "BM25 (Lexical Only)": {
+    "ndcg_10": 0.8647199033492935,
+    "mrr_10": 1.0,
+    "recall_10": 0.8333333333333334,
+    "queries_evaluated": 10
+  },
+  "HNSW (Dense Only)": {
+    "ndcg_10": 0.8432496978060933,
+    "mrr_10": 1.0,
+    "recall_10": 0.9,
+    "queries_evaluated": 10
+  },
+  "Hybrid RRF (BM25 + HNSW)": {
+    "ndcg_10": 0.9017435655503274,
+    "mrr_10": 1.0,
+    "recall_10": 0.9333333333333333,
+    "queries_evaluated": 10
+  },
+  "Hybrid RRF + L2 Cross-Encoder": {
+    "ndcg_10": 0.85517718381459,
+    "mrr_10": 1.0,
+    "recall_10": 0.9333333333333333,
+    "queries_evaluated": 10
+  }
+}
