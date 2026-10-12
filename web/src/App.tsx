@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { SearchConsole } from './components/SearchConsole';
+import { Dictionary } from './components/Dictionary';
 import { PipelineFlow } from './components/PipelineFlow';
 import { WandSimulator } from './components/WandSimulator';
 import { HnswVisualizer } from './components/HnswVisualizer';
 import { Sq8Inspector } from './components/Sq8Inspector';
 import { StressTester } from './components/StressTester';
 import { EvaluationDashboard } from './components/EvaluationDashboard';
-import { Zap, GitBranch, Cpu, Server, Layers, Activity, ExternalLink, Code2 } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('search');
@@ -35,7 +35,7 @@ export const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans">
       {/* Navigation */}
       <Navbar
         activeTab={activeTab}
@@ -53,6 +53,7 @@ export const App: React.FC = () => {
                 el?.scrollIntoView({ behavior: 'smooth' });
               }}
               onExploreArchitecture={() => setActiveTab('pipeline')}
+              onExploreDictionary={() => setActiveTab('dictionary')}
             />
             <div id="search-section">
               <SearchConsole isBackendConnected={isBackendConnected} />
@@ -60,6 +61,7 @@ export const App: React.FC = () => {
           </>
         )}
 
+        {activeTab === 'dictionary' && <Dictionary />}
         {activeTab === 'pipeline' && <PipelineFlow />}
         {activeTab === 'wand' && <WandSimulator />}
         {activeTab === 'hnsw' && <HnswVisualizer />}
@@ -69,18 +71,18 @@ export const App: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950 py-8 px-4 sm:px-6 lg:px-8 mt-12">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+      <footer className="border-t border-zinc-800 bg-zinc-950 py-6 px-4 sm:px-6 lg:px-8 mt-12">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500 font-mono">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-white text-sm">Titan<span className="text-indigo-400">IR</span></span>
+            <span className="font-bold text-white text-xs">Titan<span className="text-zinc-400">IR</span></span>
             <span>— High-Throughput Hybrid Retrieval Engine</span>
           </div>
 
-          <div className="flex items-center gap-4 font-mono text-[11px]">
-            <span className="text-indigo-400">Rust 2021</span>
-            <span className="text-cyan-400">ONNX Runtime</span>
-            <span className="text-purple-400">SIMD AVX2</span>
-            <span className="text-emerald-400">MS MARCO Validated</span>
+          <div className="flex items-center gap-4 text-[11px] text-zinc-400">
+            <span>Rust 2021</span>
+            <span>ONNX Runtime</span>
+            <span>AVX2 SIMD</span>
+            <span>MS MARCO Validated</span>
           </div>
         </div>
       </footer>

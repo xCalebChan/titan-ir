@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Zap, ShieldCheck, Eye, FastForward } from 'lucide-react';
+import { Zap, ShieldCheck, Eye, FastForward, Terminal } from 'lucide-react';
 
 interface SimulatedBlock {
   blockIdx: number;
@@ -41,7 +41,6 @@ export const WandSimulator: React.FC = () => {
   Object.values(TERM_POSTING_BLOCKS).forEach((blocks) => {
     blocks.forEach((b) => {
       totalBlocks++;
-      // A block is skipped if its max possible score alone cannot contribute enough to reach theta in the heap
       if (b.maxScore < theta * 0.45) {
         skippedBlocks++;
       }
@@ -51,39 +50,34 @@ export const WandSimulator: React.FC = () => {
   const efficiencyPct = ((skippedBlocks / totalBlocks) * 100).toFixed(1);
 
   return (
-    <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="text-center max-w-3xl mx-auto mb-10">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-950/80 border border-indigo-700/40 text-indigo-300 text-xs font-semibold mb-3">
-          <Zap className="h-3.5 w-3.5 text-indigo-400" /> Core Systems Component
+    <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mb-8">
+        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 text-xs font-mono mb-2">
+          <Terminal className="h-3.5 w-3.5 text-zinc-400" />
+          Lexical Query Optimization
         </div>
-        <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+        <h2 className="text-2xl font-bold text-white tracking-tight">
           Block-Max WAND Pruning Simulator
         </h2>
-        <p className="mt-2 text-sm text-slate-400">
-          Observe how the engine dynamically skips entire 128-document Elias-Fano compressed blocks when their theoretical upper-bound BM25 contribution cannot beat heap threshold <span className="font-mono text-indigo-300">θ</span>.
+        <p className="mt-1 text-sm text-zinc-400 max-w-3xl">
+          Observe how the engine dynamically skips entire 128-document Elias-Fano compressed blocks when their theoretical upper-bound BM25 contribution cannot beat heap threshold <span className="font-mono text-zinc-200">θ</span>.
         </p>
       </div>
 
       {/* Threshold Slider Controller */}
-      <div className="mb-8 p-6 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl">
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+      <div className="mb-6 p-5 rounded-lg bg-zinc-900 border border-zinc-800">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-3 font-mono">
           <div>
-            <div className="text-xs uppercase font-semibold text-slate-400">Top-K Heap Minimum Threshold</div>
-            <div className="text-2xl font-bold text-indigo-400 font-mono">
+            <div className="text-[11px] uppercase text-zinc-500">Top-K Heap Minimum Threshold</div>
+            <div className="text-xl font-bold text-zinc-100 tabular-nums">
               θ = {theta.toFixed(1)}
             </div>
           </div>
 
-          {/* Efficiency Gauge */}
-          <div className="flex items-center gap-4 text-right">
-            <div>
-              <div className="text-xs uppercase font-semibold text-slate-400">Pruning Efficiency</div>
-              <div className="text-2xl font-bold text-emerald-400 font-mono">
-                {efficiencyPct}% Skipped
-              </div>
-            </div>
-            <div className="text-xs text-slate-400 font-mono hidden sm:block">
-              {skippedBlocks} of {totalBlocks} Blocks Bypassed
+          <div className="text-right">
+            <div className="text-[11px] uppercase text-zinc-500">Pruning Efficiency</div>
+            <div className="text-xl font-bold text-zinc-100 tabular-nums">
+              {efficiencyPct}% Skipped ({skippedBlocks}/{totalBlocks} Blocks)
             </div>
           </div>
         </div>
@@ -95,64 +89,58 @@ export const WandSimulator: React.FC = () => {
           step="0.1"
           value={theta}
           onChange={(e) => setTheta(parseFloat(e.target.value))}
-          className="w-full accent-indigo-500 cursor-pointer h-2 bg-slate-800 rounded-lg"
+          className="w-full accent-zinc-300 cursor-pointer h-2 bg-zinc-800 rounded"
         />
 
-        <div className="flex justify-between text-xs text-slate-400 font-mono mt-2">
-          <span>θ = 1.0 (Low Threshold / Early Query Phase)</span>
-          <span>θ = 4.5 (Mid Query Heap Fill)</span>
-          <span>θ = 8.0 (High Threshold / Deep Heap Saturation)</span>
+        <div className="flex justify-between text-[11px] text-zinc-500 font-mono mt-2">
+          <span>θ = 1.0 (Early Query Stage)</span>
+          <span>θ = 4.5 (Mid Query Saturation)</span>
+          <span>θ = 8.0 (Late Deep Heap Saturation)</span>
         </div>
       </div>
 
       {/* Visual Blocks Grid */}
-      <div className="space-y-6">
+      <div className="space-y-4">
         {Object.entries(TERM_POSTING_BLOCKS).map(([term, blocks]) => (
-          <div key={term} className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-bold text-white font-mono flex items-center gap-2">
-                <span className="text-xs px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">TERM</span>
-                "{term}"
+          <div key={term} className="p-4 sm:p-5 rounded-lg bg-zinc-900/60 border border-zinc-800">
+            <div className="flex items-center justify-between mb-3 font-mono">
+              <span className="text-xs text-white font-semibold flex items-center gap-2">
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700">TERM</span>
+                &quot;{term}&quot;
               </span>
-              <span className="text-xs text-slate-400 font-mono">5 Elias-Fano Blocks (640 Postings)</span>
+              <span className="text-xs text-zinc-500">5 Elias-Fano Blocks (640 Postings)</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-5 gap-2.5">
               {blocks.map((block) => {
                 const isSkipped = block.maxScore < theta * 0.45;
                 return (
                   <div
                     key={block.blockIdx}
-                    className={`p-3.5 rounded-xl border transition-all ${
+                    className={`p-3 rounded-md border font-mono transition-colors ${
                       isSkipped
-                        ? 'bg-amber-950/20 border-amber-900/50 opacity-60 hover:opacity-100'
-                        : 'bg-emerald-950/30 border-emerald-500/40 shadow-lg shadow-emerald-950/20'
+                        ? 'bg-zinc-950 border-zinc-850 text-zinc-500 opacity-60'
+                        : 'bg-zinc-900 border-zinc-700 text-zinc-200'
                     }`}
                   >
-                    <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 mb-1">
+                    <div className="flex items-center justify-between text-[10px] mb-1">
                       <span>Block #{block.blockIdx}</span>
-                      <span className={`font-semibold ${isSkipped ? 'text-amber-400' : 'text-emerald-400'}`}>
-                        {isSkipped ? 'SKIPPED' : 'EVAL'}
+                      <span className={`font-semibold ${isSkipped ? 'text-zinc-500' : 'text-zinc-100'}`}>
+                        {isSkipped ? 'SKIPPED' : 'SCORED'}
                       </span>
                     </div>
 
-                    <div className="text-xs font-semibold text-white font-mono">{block.docRange}</div>
+                    <div className="text-xs font-semibold text-white">{block.docRange}</div>
 
-                    <div className="mt-2 text-[11px] text-slate-400 font-mono space-y-0.5">
-                      <div>max_doc_id: <span className="text-slate-200">{block.maxDocId}</span></div>
-                      <div>max_score: <span className={isSkipped ? 'text-amber-400 font-semibold' : 'text-emerald-400 font-semibold'}>{block.maxScore.toFixed(2)}</span></div>
-                    </div>
-
-                    <div className="mt-2.5 pt-2 border-t border-slate-800/80 text-[10px] font-mono">
-                      {isSkipped ? (
-                        <span className="text-amber-400/90 flex items-center gap-1">
-                          <FastForward className="h-3 w-3" /> Jump past block
-                        </span>
-                      ) : (
-                        <span className="text-emerald-400 flex items-center gap-1">
-                          <Eye className="h-3 w-3" /> Elias-Fano decode
-                        </span>
-                      )}
+                    <div className="mt-2 text-[11px] space-y-0.5 pt-1.5 border-t border-zinc-800">
+                      <div className="flex justify-between">
+                        <span className="text-zinc-500">Max DocID:</span>
+                        <span className="text-zinc-300 tabular-nums">#{block.maxDocId}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-zinc-500">Upper Score:</span>
+                        <span className="text-zinc-300 tabular-nums">{block.maxScore.toFixed(2)}</span>
+                      </div>
                     </div>
                   </div>
                 );
@@ -160,17 +148,6 @@ export const WandSimulator: React.FC = () => {
             </div>
           </div>
         ))}
-      </div>
-
-      {/* Theoretical Proof Card */}
-      <div className="mt-8 p-6 rounded-2xl bg-indigo-950/20 border border-indigo-900/40">
-        <h4 className="text-base font-bold text-indigo-300 flex items-center gap-2 mb-2">
-          <ShieldCheck className="h-5 w-5 text-indigo-400" />
-          Block-Max WAND Pruning Invariant
-        </h4>
-        <p className="text-sm text-slate-300 leading-relaxed font-sans">
-          Let block B have upper-bound term score max score S(t, D) &le; max_term_score. If the sum of maximum block scores for all active query terms cannot exceed &theta;, no document in that block can enter the top-K min-heap. Therefore, <span className="text-indigo-400 font-semibold">100% of postings in that block can be skipped without decompression</span>, guaranteeing zero false negatives while running in sub-milliseconds.
-        </p>
       </div>
     </div>
   );

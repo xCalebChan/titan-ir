@@ -1,40 +1,54 @@
 import React, { useState } from 'react';
-import { GitBranch, Layers, ShieldCheck, ChevronRight, Play, RotateCcw } from 'lucide-react';
+import { GitBranch, Play, RotateCcw, ChevronRight, Terminal } from 'lucide-react';
+
+interface TraversalStep {
+  step: number;
+  activeLayer: number;
+  activeNodes: number[];
+  title: string;
+  desc: string;
+  action: string;
+}
 
 export const HnswVisualizer: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);
-  const [useDiversityHeuristic, setUseDiversityHeuristic] = useState<boolean>(true);
 
-  const steps = [
+  const steps: TraversalStep[] = [
     {
-      title: '1. Entry Point at Top Layer (Layer 2)',
-      desc: 'Query vector enters at top layer entry point (DocID 3). Evaluates long-range highway edges to jump quickly across semantic space.',
+      step: 0,
+      activeLayer: 2,
+      activeNodes: [3],
+      title: 'Entry Point at Top Layer (Layer 2)',
+      desc: 'Traversal begins at global entry point Node #3. The engine inspects sparse highway neighbors.',
+      action: 'Evaluate distance between query vector Q and Node #3 neighbors.',
+    },
+    {
+      step: 1,
       activeLayer: 2,
       activeNodes: [3, 7],
-      hopDist: '0.85 -> 0.42',
+      title: 'Highway Hop on Layer 2',
+      desc: 'Neighbor Node #7 is strictly closer to query vector Q than Node #3 (cosine dist 0.42 vs 0.68).',
+      action: 'Greedy hop to Node #7. Local minimum reached on Layer 2. Drop down to Layer 1.',
     },
     {
-      title: '2. Greedy Descent to Layer 1',
-      desc: 'Local minimum reached at Layer 2 (DocID 7). Steps down to Layer 1 at DocID 7, exploring intermediate cluster neighbors.',
+      step: 2,
       activeLayer: 1,
-      activeNodes: [7, 10, 14],
-      hopDist: '0.42 -> 0.28',
+      activeNodes: [7, 12, 19],
+      title: 'Intermediate Cluster Routing (Layer 1)',
+      desc: 'From Node #7, inspect intermediate density neighbors. Node #19 is closest to Q.',
+      action: 'Hop to Node #19. No neighbor is closer on Layer 1. Drop down to Layer 0.',
     },
     {
-      title: '3. Ground Layer Beam Search (Layer 0)',
-      desc: 'Transitions to Layer 0 with efSearch=64 beam priority queue. Conducts dense approximate nearest neighbor exploration.',
+      step: 3,
       activeLayer: 0,
-      activeNodes: [14, 2, 5, 8],
-      hopDist: '0.28 -> 0.12',
-    },
-    {
-      title: '4. Top-K Candidates Extraction',
-      desc: 'Identifies closest semantic neighbors with SQ8 SIMD dot products. Returns deduplicated top candidates to Reciprocal Rank Fusion.',
-      activeLayer: 0,
-      activeNodes: [2, 5],
-      hopDist: 'Top Hits: DocID #2 (0.98), DocID #5 (0.94)',
+      activeNodes: [19, 42, 88, 105],
+      title: 'Dense Beam Search on Layer 0 (ef_search = 64)',
+      desc: 'Explore candidate pool on full 1M-document graph. Expand neighbors with heuristic diversity pruning.',
+      action: 'Discover final top-K nearest semantic neighbors [Doc #88, Doc #105, Doc #42].',
     },
   ];
+
+  const current = steps[currentStep];
 
   const handleNextStep = () => {
     setCurrentStep((prev) => (prev + 1) % steps.length);
@@ -44,174 +58,160 @@ export const HnswVisualizer: React.FC = () => {
     setCurrentStep(0);
   };
 
-  const current = steps[currentStep];
-
   return (
-    <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="text-center max-w-3xl mx-auto mb-10">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-700/40 text-cyan-300 text-xs font-semibold mb-3">
-          <GitBranch className="h-3.5 w-3.5 text-cyan-400" /> Vector Retrieval Component
+    <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Title */}
+      <div className="mb-8">
+        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 text-xs font-mono mb-2">
+          <Terminal className="h-3.5 w-3.5 text-zinc-400" />
+          Dense Vector ANN Traversal
         </div>
-        <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-          HNSW Multi-Layer Graph & Beam Search
+        <h2 className="text-2xl font-bold text-white tracking-tight">
+          HNSW Graph Traversal Visualizer
         </h2>
-        <p className="mt-2 text-sm text-slate-400">
-          Visualize hierarchical navigable small-world traversal from sparse highway layers down to dense ground-layer beam search.
+        <p className="mt-1 text-sm text-zinc-400 max-w-3xl">
+          Step through greedy logarithmic navigation across the Hierarchical Navigable Small World layers, from top sparse express highways down to dense base-layer beam searches.
         </p>
       </div>
 
       {/* Traversal Step Controller */}
-      <div className="mb-8 p-6 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl flex flex-wrap items-center justify-between gap-4">
+      <div className="mb-6 p-5 rounded-lg bg-zinc-900 border border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-semibold text-cyan-400 uppercase tracking-wider font-mono">
+          <span className="text-xs font-mono text-zinc-500 uppercase tracking-wider">
             Traversal Step {currentStep + 1} of {steps.length}
           </span>
-          <h3 className="text-lg font-bold text-white mt-0.5">{current.title}</h3>
-          <p className="text-xs text-slate-300 max-w-xl mt-1">{current.desc}</p>
+          <h3 className="text-base font-bold text-white mt-0.5">{current.title}</h3>
+          <p className="text-xs text-zinc-400 max-w-xl mt-1 leading-relaxed">{current.desc}</p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
           <button
             onClick={handleNextStep}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs transition-all shadow-md shadow-cyan-600/20"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded bg-zinc-100 hover:bg-white text-zinc-950 font-medium text-xs transition-colors"
           >
-            <Play className="h-3.5 w-3.5" /> Next Traversal Hop
+            <Play className="h-3.5 w-3.5" /> Next Hop
           </button>
           <button
             onClick={handleReset}
-            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs transition-all"
+            className="p-2 rounded bg-zinc-800 hover:bg-zinc-750 text-zinc-300 text-xs transition-colors"
             title="Reset to Entry Point"
           >
-            <RotateCcw className="h-4 w-4" />
+            <RotateCcw className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>
 
       {/* Multi-Layer Visual Representation */}
-      <div className="space-y-6 mb-8">
-        {/* Layer 2: Highway Layer */}
-        <div className={`p-5 rounded-2xl border transition-all ${
+      <div className="space-y-4 mb-6">
+        {/* Layer 2 */}
+        <div className={`p-4 sm:p-5 rounded-lg border transition-colors ${
           current.activeLayer === 2
-            ? 'bg-cyan-950/20 border-cyan-500/60 shadow-lg shadow-cyan-950/30'
-            : 'bg-slate-900/60 border-slate-800 opacity-60'
+            ? 'bg-zinc-900 border-zinc-600'
+            : 'bg-zinc-950/70 border-zinc-800 opacity-60'
         }`}>
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-3 font-mono">
             <div className="flex items-center gap-2">
-              <span className="text-xs px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono font-bold text-[10px]">
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
                 LAYER 2
               </span>
-              <span className="text-sm font-bold text-white">Highway Express Routing (Logarithmic Step Decay)</span>
+              <span className="text-xs font-semibold text-white">Highway Express Routing (Logarithmic Step Decay)</span>
             </div>
-            <span className="text-xs text-slate-400 font-mono">M = 4 connections | Exponential decay ml=0.36</span>
+            <span className="text-[11px] text-zinc-500">M = 4 connections | ml = 0.36</span>
           </div>
 
-          <div className="h-24 bg-slate-950/80 rounded-xl border border-slate-800/80 flex items-center justify-around px-8 relative overflow-hidden">
-            <div className={`h-10 w-10 rounded-full flex items-center justify-center font-mono text-xs font-bold transition-all ${
+          <div className="h-20 bg-zinc-950 rounded border border-zinc-850 flex items-center justify-around px-8 relative overflow-hidden">
+            <div className={`h-8 w-8 rounded-full flex items-center justify-center font-mono text-xs font-semibold transition-colors ${
               current.activeNodes.includes(3)
-                ? 'bg-cyan-500 text-slate-950 ring-4 ring-cyan-500/30 animate-pulse'
-                : 'bg-slate-800 text-slate-300'
+                ? 'bg-zinc-100 text-zinc-950 font-bold'
+                : 'bg-zinc-800 text-zinc-400'
             }`}>
-              #3 (EP)
+              #3
             </div>
 
-            <div className="h-0.5 flex-1 mx-4 bg-cyan-500/40 relative">
-              <div className="absolute right-0 -top-1 w-2 h-2 rounded-full bg-cyan-400"></div>
-            </div>
+            <div className="h-px flex-1 mx-4 bg-zinc-700" />
 
-            <div className={`h-10 w-10 rounded-full flex items-center justify-center font-mono text-xs font-bold transition-all ${
+            <div className={`h-8 w-8 rounded-full flex items-center justify-center font-mono text-xs font-semibold transition-colors ${
               current.activeNodes.includes(7)
-                ? 'bg-cyan-500 text-slate-950 ring-4 ring-cyan-500/30'
-                : 'bg-slate-800 text-slate-300'
+                ? 'bg-zinc-100 text-zinc-950 font-bold'
+                : 'bg-zinc-800 text-zinc-400'
             }`}>
               #7
             </div>
           </div>
         </div>
 
-        {/* Layer 1: Intermediate Routing */}
-        <div className={`p-5 rounded-2xl border transition-all ${
+        {/* Layer 1 */}
+        <div className={`p-4 sm:p-5 rounded-lg border transition-colors ${
           current.activeLayer === 1
-            ? 'bg-cyan-950/20 border-cyan-500/60 shadow-lg shadow-cyan-950/30'
-            : 'bg-slate-900/60 border-slate-800 opacity-60'
+            ? 'bg-zinc-900 border-zinc-600'
+            : 'bg-zinc-950/70 border-zinc-800 opacity-60'
         }`}>
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-3 font-mono">
             <div className="flex items-center gap-2">
-              <span className="text-xs px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono font-bold text-[10px]">
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
                 LAYER 1
               </span>
-              <span className="text-sm font-bold text-white">Cluster Routing (Medium Density)</span>
+              <span className="text-xs font-semibold text-white">Intermediate Cluster Routing</span>
             </div>
-            <span className="text-xs text-slate-400 font-mono">M = 8 connections</span>
+            <span className="text-[11px] text-zinc-500">M = 8 connections</span>
           </div>
 
-          <div className="h-24 bg-slate-950/80 rounded-xl border border-slate-800/80 flex items-center justify-around px-8 relative overflow-hidden">
-            {[3, 7, 10, 14].map((id) => (
-              <div
-                key={id}
-                className={`h-9 w-9 rounded-full flex items-center justify-center font-mono text-xs font-bold transition-all ${
-                  current.activeNodes.includes(id)
-                    ? 'bg-cyan-500 text-slate-950 ring-4 ring-cyan-500/30'
-                    : 'bg-slate-800 text-slate-400'
-                }`}
-              >
-                #{id}
-              </div>
+          <div className="h-20 bg-zinc-950 rounded border border-zinc-850 flex items-center justify-around px-6 relative overflow-hidden">
+            {[3, 7, 12, 19].map((nodeId) => (
+              <React.Fragment key={nodeId}>
+                <div className={`h-8 w-8 rounded-full flex items-center justify-center font-mono text-xs font-semibold transition-colors ${
+                  current.activeNodes.includes(nodeId)
+                    ? 'bg-zinc-100 text-zinc-950 font-bold'
+                    : 'bg-zinc-800 text-zinc-400'
+                }`}>
+                  #{nodeId}
+                </div>
+                {nodeId !== 19 && <div className="h-px flex-1 mx-2 bg-zinc-800" />}
+              </React.Fragment>
             ))}
           </div>
         </div>
 
-        {/* Layer 0: Ground Dense Layer */}
-        <div className={`p-5 rounded-2xl border transition-all ${
+        {/* Layer 0 */}
+        <div className={`p-4 sm:p-5 rounded-lg border transition-colors ${
           current.activeLayer === 0
-            ? 'bg-cyan-950/20 border-cyan-500/60 shadow-lg shadow-cyan-950/30'
-            : 'bg-slate-900/60 border-slate-800 opacity-60'
+            ? 'bg-zinc-900 border-zinc-600'
+            : 'bg-zinc-950/70 border-zinc-800 opacity-60'
         }`}>
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-3 font-mono">
             <div className="flex items-center gap-2">
-              <span className="text-xs px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono font-bold text-[10px]">
-                LAYER 0
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
+                LAYER 0 (BASE)
               </span>
-              <span className="text-sm font-bold text-white">Ground Layer: Dense Beam Search (efSearch = 64)</span>
+              <span className="text-xs font-semibold text-white">Dense Vector Graph (All 1M Documents)</span>
             </div>
-            <span className="text-xs text-slate-400 font-mono">M0 = 32 connections (2x capacity)</span>
+            <span className="text-[11px] text-zinc-500">M = 16 connections | Heuristic Diversity Algorithm 4</span>
           </div>
 
-          <div className="h-28 bg-slate-950/80 rounded-xl border border-slate-800/80 flex items-center justify-around px-4 relative overflow-hidden flex-wrap gap-2">
-            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14].map((id) => (
+          <div className="h-20 bg-zinc-950 rounded border border-zinc-850 flex items-center justify-around px-4 relative overflow-hidden">
+            {[19, 42, 88, 105, 342, 610].map((nodeId) => (
               <div
-                key={id}
-                className={`h-8 w-8 rounded-full flex items-center justify-center font-mono text-[11px] font-bold transition-all ${
-                  current.activeNodes.includes(id)
-                    ? 'bg-cyan-400 text-slate-950 ring-4 ring-cyan-400/40 scale-110 shadow-lg'
-                    : 'bg-slate-800/80 text-slate-400'
+                key={nodeId}
+                className={`h-8 w-8 rounded-full flex items-center justify-center font-mono text-xs font-semibold transition-colors ${
+                  current.activeNodes.includes(nodeId)
+                    ? 'bg-zinc-100 text-zinc-950 font-bold'
+                    : 'bg-zinc-800 text-zinc-400'
                 }`}
               >
-                #{id}
+                #{nodeId}
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Heuristic Diversity Edge Selection Guarantee Card */}
-      <div className="p-6 rounded-2xl bg-cyan-950/20 border border-cyan-900/40 flex flex-wrap items-start justify-between gap-6">
-        <div className="max-w-2xl">
-          <div className="flex items-center gap-2 text-cyan-300 font-bold mb-1">
-            <ShieldCheck className="h-5 w-5 text-cyan-400" />
-            Heuristic Edge Selection: Diversity Enforcement (Algorithm 4)
-          </div>
-          <p className="text-xs text-slate-300 leading-relaxed font-sans mt-2">
-            Standard KNN edge selection causes isolated cluster bottlenecks where nodes connect only to nearby duplicates. TitanIR enforces diversity pruning: a candidate node <span className="font-mono text-cyan-300">e</span> is linked to base node <span className="font-mono text-cyan-300">u</span> only if <span className="font-mono text-cyan-300">dist(e, u) &lt; dist(e, r)</span> for all already selected neighbors <span className="font-mono text-cyan-300">r</span>. This eliminates clustering traps, guaranteeing high recall while beam searching.
-          </p>
+      {/* Traversal State Footnote */}
+      <div className="p-4 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-between text-xs font-mono">
+        <div className="flex items-center gap-2 text-zinc-300">
+          <ChevronRight className="h-3.5 w-3.5 text-zinc-500" />
+          <span>CURRENT ACTION: {current.action}</span>
         </div>
-
-        <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-slate-300 space-y-1">
-          <div className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">HNSW PARAMETERS</div>
-          <div>M: <span className="text-cyan-400">16</span> | M0: <span className="text-cyan-400">32</span></div>
-          <div>efConstruction: <span className="text-cyan-400">100</span></div>
-          <div>efSearch: <span className="text-cyan-400">64</span></div>
-          <div>Metric: <span className="text-emerald-400">Cosine via SQ8</span></div>
-        </div>
+        <span className="text-zinc-500 hidden sm:block">Total Graph Nodes: 1,000,000 | Traversal Time: 0.28ms</span>
       </div>
     </div>
   );

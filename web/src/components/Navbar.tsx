@@ -1,5 +1,5 @@
 import React from 'react';
-import { Cpu, Zap, Activity, Layers, Search, Server, GitBranch } from 'lucide-react';
+import { Cpu, Zap, Activity, Layers, Search, Server, GitBranch, BookOpen, Terminal } from 'lucide-react';
 
 interface NavbarProps {
   activeTab: string;
@@ -14,38 +14,39 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const tabs = [
     { id: 'search', label: 'Hybrid Search', icon: Search },
-    { id: 'pipeline', label: 'Architecture Pipeline', icon: Layers },
+    { id: 'dictionary', label: 'Dictionary', icon: BookOpen },
+    { id: 'pipeline', label: 'Pipeline Architecture', icon: Layers },
     { id: 'wand', label: 'Block-Max WAND', icon: Zap },
     { id: 'hnsw', label: 'HNSW Graph', icon: GitBranch },
-    { id: 'sq8', label: 'SQ8 Quantization', icon: Cpu },
-    { id: 'benchmarks', label: 'Load Benchmark', icon: Activity },
+    { id: 'sq8', label: 'SQ8 Quant', icon: Cpu },
+    { id: 'benchmarks', label: 'Stress Benchmark', icon: Activity },
     { id: 'eval', label: 'MS MARCO Eval', icon: Server },
   ];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/95 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-14">
           {/* Logo */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('search')}>
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 p-0.5 shadow-lg shadow-indigo-500/25 flex items-center justify-center">
-              <div className="h-full w-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-                <Zap className="h-5 w-5 text-indigo-400" />
-              </div>
+          <div
+            className="flex items-center gap-2.5 cursor-pointer select-none"
+            onClick={() => setActiveTab('search')}
+          >
+            <div className="h-7 w-7 rounded bg-zinc-850 border border-zinc-700 flex items-center justify-center text-zinc-100">
+              <Terminal className="h-4 w-4 text-zinc-200" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xl font-bold tracking-tight text-white">Titan<span className="text-indigo-400">IR</span></span>
-                <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                  Rust Core
-                </span>
-              </div>
-              <p className="text-xs text-slate-400 hidden sm:block">High-Throughput Hybrid Retrieval Engine</p>
+            <div className="flex items-center gap-2">
+              <span className="text-base font-bold tracking-tight text-white">
+                Titan<span className="text-zinc-400 font-mono">IR</span>
+              </span>
+              <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-400 border border-zinc-800">
+                Rust Core
+              </span>
             </div>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1">
+          {/* Desktop Navigation Links */}
+          <nav className="hidden xl:flex items-center gap-1">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -53,13 +54,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs font-medium transition-colors ${
                     isActive
-                      ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                      ? 'bg-zinc-800 text-white border border-zinc-700'
+                      : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 border border-transparent'
                   }`}
                 >
-                  <Icon className={`h-4 w-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                  <Icon className={`h-3.5 w-3.5 ${isActive ? 'text-zinc-100' : 'text-zinc-500'}`} />
                   {tab.label}
                 </button>
               );
@@ -67,26 +68,23 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
 
           {/* System Status Pill */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-xs">
-              <span className="relative flex h-2 w-2">
-                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                  isBackendConnected ? 'bg-emerald-400' : 'bg-cyan-400'
-                }`}></span>
-                <span className={`relative inline-flex rounded-full h-2 w-2 ${
-                  isBackendConnected ? 'bg-emerald-500' : 'bg-cyan-500'
-                }`}></span>
-              </span>
-              <span className="text-slate-300 font-mono">
-                {isBackendConnected ? 'Native Engine 8080' : 'In-Browser Hybrid'}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-xs font-mono">
+              <span
+                className={`h-2 w-2 rounded-full ${
+                  isBackendConnected ? 'bg-emerald-500' : 'bg-zinc-400'
+                }`}
+              />
+              <span className="text-zinc-300 text-[11px]">
+                {isBackendConnected ? 'Native Engine :8080' : 'In-Browser Hybrid'}
               </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Mobile Nav Bar */}
-      <div className="lg:hidden flex overflow-x-auto px-4 py-2 gap-1 border-t border-slate-800/60 bg-slate-950/95">
+      {/* Sub-nav / Mobile scroll bar */}
+      <div className="xl:hidden flex overflow-x-auto px-4 py-1.5 gap-1 border-t border-zinc-850 bg-zinc-950">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -94,13 +92,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium whitespace-nowrap ${
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium whitespace-nowrap transition-colors ${
                 isActive
-                  ? 'bg-indigo-600 text-white'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                  ? 'bg-zinc-800 text-white border border-zinc-700'
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
               }`}
             >
-              <Icon className="h-3.5 w-3.5" />
+              <Icon className="h-3 w-3" />
               {tab.label}
             </button>
           );

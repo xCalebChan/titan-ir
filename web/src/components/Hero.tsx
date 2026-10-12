@@ -1,88 +1,103 @@
 import React from 'react';
-import { Zap, Cpu, Gauge, Database, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Gauge, Database, ArrowRight, ShieldCheck, Search, BookOpen, Terminal } from 'lucide-react';
 
 interface HeroProps {
   onExploreSearch: () => void;
   onExploreArchitecture: () => void;
+  onExploreDictionary?: () => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onExploreSearch, onExploreArchitecture }) => {
+export const Hero: React.FC<HeroProps> = ({
+  onExploreSearch,
+  onExploreArchitecture,
+  onExploreDictionary,
+}) => {
   return (
-    <div className="relative overflow-hidden pt-10 pb-12 border-b border-slate-800/80 bg-gradient-to-b from-slate-950 via-slate-900/60 to-slate-950">
-      {/* Background glow effects */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-1/3 left-1/4 w-[350px] h-[200px] bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center max-w-3xl mx-auto">
-          {/* Top pill */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-950/60 border border-indigo-700/30 text-indigo-300 text-xs font-medium mb-6 backdrop-blur-md">
-            <span className="flex h-2 w-2 rounded-full bg-indigo-400 animate-pulse"></span>
-            Production Blueprint: Dual-Engine Hybrid Retrieval in Rust
+    <div className="relative border-b border-zinc-800 bg-zinc-950 pt-10 pb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto text-center">
+          {/* Top architecture label */}
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 text-xs font-mono mb-5">
+            <span className="h-1.5 w-1.5 rounded-full bg-zinc-400" />
+            Systems Architecture Blueprint: Dual-Engine Hybrid Retrieval in Rust
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15]">
-            Titan<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-indigo-200 to-cyan-400">IR</span> Engine
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-tight">
+            TitanIR Systems Engine
           </h1>
-          
-          <p className="mt-4 text-lg text-slate-300 font-light leading-relaxed">
-            High-Throughput Hybrid Search combining <span className="text-indigo-400 font-medium">SIMD Elias-Fano Block-Max WAND</span> with <span className="text-cyan-400 font-medium">SQ8 Quantized HNSW Graph Traversal</span> and <span className="text-purple-400 font-medium">L2 Cross-Encoder Neural Reranking</span>.
+
+          <p className="mt-3.5 text-base sm:text-lg text-zinc-400 font-normal leading-relaxed">
+            High-Throughput Hybrid Search uniting <span className="text-zinc-200 font-medium">SIMD Elias-Fano Block-Max WAND</span> with <span className="text-zinc-200 font-medium">SQ8 Quantized HNSW Graphs</span> and <span className="text-zinc-200 font-medium">L2 Cross-Encoder Neural Reranking</span>.
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+          {/* Action buttons */}
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
             <button
               onClick={onExploreSearch}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-600/30 hover:from-indigo-500 hover:to-indigo-400 transition-all hover:scale-[1.02]"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-md bg-zinc-100 hover:bg-white text-zinc-950 font-medium text-xs sm:text-sm transition-colors"
             >
-              <Zap className="h-4 w-4" />
-              Launch Hybrid Query Console
+              <Search className="h-4 w-4" />
+              Launch Query Console
             </button>
             <button
               onClick={onExploreArchitecture}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 font-semibold text-sm hover:bg-slate-800 transition-all"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-850 hover:text-white font-medium text-xs sm:text-sm transition-colors"
             >
-              Explore Architecture Blueprint
-              <ArrowRight className="h-4 w-4 text-slate-400" />
+              View Pipeline Architecture
+              <ArrowRight className="h-4 w-4 text-zinc-500" />
             </button>
+            {onExploreDictionary && (
+              <button
+                onClick={onExploreDictionary}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-850 hover:text-white font-medium text-xs sm:text-sm transition-colors"
+              >
+                <BookOpen className="h-4 w-4 text-zinc-500" />
+                Technical Dictionary
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Core Specs Metric Strip */}
-        <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 backdrop-blur-sm">
-            <div className="flex items-center gap-2 text-indigo-400 mb-1">
-              <Gauge className="h-4 w-4" />
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Median Latency</span>
+        {/* Systems Metric Cards */}
+        <div className="mt-10 grid grid-cols-2 lg:grid-cols-4 gap-3 max-w-5xl mx-auto">
+          <div className="p-4 rounded-lg bg-zinc-900/50 border border-zinc-800">
+            <div className="flex items-center justify-between text-zinc-400 mb-1.5">
+              <span className="text-xs font-mono uppercase tracking-wider text-zinc-500">Median Latency</span>
+              <Gauge className="h-4 w-4 text-zinc-400" />
             </div>
-            <div className="text-2xl font-bold text-white font-mono">&lt; 0.40 ms</div>
-            <p className="text-xs text-slate-400 mt-1">Sub-millisecond p50 on standard queries</p>
+            <div className="text-2xl font-bold text-white font-mono tabular-nums">&lt; 0.40 ms</div>
+            <p className="text-xs text-zinc-500 mt-1">Sub-millisecond p50 on multi-term queries</p>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 backdrop-blur-sm">
-            <div className="flex items-center gap-2 text-cyan-400 mb-1">
-              <Database className="h-4 w-4" />
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Vector RAM</span>
+          <div className="p-4 rounded-lg bg-zinc-900/50 border border-zinc-800">
+            <div className="flex items-center justify-between text-zinc-400 mb-1.5">
+              <span className="text-xs font-mono uppercase tracking-wider text-zinc-500">Vector RAM</span>
+              <Database className="h-4 w-4 text-zinc-400" />
             </div>
-            <div className="text-2xl font-bold text-white font-mono">384 MB <span className="text-xs text-emerald-400 font-normal">(-75%)</span></div>
-            <p className="text-xs text-slate-400 mt-1">SQ8 scalar quantization per 1M docs</p>
+            <div className="text-2xl font-bold text-white font-mono tabular-nums">
+              384 MB <span className="text-xs text-zinc-400 font-normal">(-75%)</span>
+            </div>
+            <p className="text-xs text-zinc-500 mt-1">SQ8 scalar quantization per 1M docs</p>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 backdrop-blur-sm">
-            <div className="flex items-center gap-2 text-purple-400 mb-1">
-              <Zap className="h-4 w-4" />
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Relevance nDCG@10</span>
+          <div className="p-4 rounded-lg bg-zinc-900/50 border border-zinc-800">
+            <div className="flex items-center justify-between text-zinc-400 mb-1.5">
+              <span className="text-xs font-mono uppercase tracking-wider text-zinc-500">MS MARCO nDCG@10</span>
+              <Terminal className="h-4 w-4 text-zinc-400" />
             </div>
-            <div className="text-2xl font-bold text-white font-mono">0.671 <span className="text-xs text-purple-400 font-normal">(+36%)</span></div>
-            <p className="text-xs text-slate-400 mt-1">MS MARCO benchmark validation</p>
+            <div className="text-2xl font-bold text-white font-mono tabular-nums">
+              0.671 <span className="text-xs text-zinc-400 font-normal">(+36%)</span>
+            </div>
+            <p className="text-xs text-zinc-500 mt-1">Full 4-stage pipeline retrieval accuracy</p>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 backdrop-blur-sm">
-            <div className="flex items-center gap-2 text-emerald-400 mb-1">
-              <ShieldCheck className="h-4 w-4" />
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Memory Safety</span>
+          <div className="p-4 rounded-lg bg-zinc-900/50 border border-zinc-800">
+            <div className="flex items-center justify-between text-zinc-400 mb-1.5">
+              <span className="text-xs font-mono uppercase tracking-wider text-zinc-500">Memory Allocation</span>
+              <ShieldCheck className="h-4 w-4 text-zinc-400" />
             </div>
-            <div className="text-2xl font-bold text-white font-mono">0 Alloc</div>
-            <p className="text-xs text-slate-400 mt-1">Zero heap alloc on query hot loop</p>
+            <div className="text-2xl font-bold text-white font-mono tabular-nums">0 Alloc</div>
+            <p className="text-xs text-zinc-500 mt-1">Zero heap allocation in query hot loop</p>
           </div>
         </div>
       </div>

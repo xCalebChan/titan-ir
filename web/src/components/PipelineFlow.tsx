@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layers, Zap, GitBranch, Cpu, Filter, CheckCircle2, ChevronRight, Code } from 'lucide-react';
+import { Layers, Zap, GitBranch, Cpu, Filter, CheckCircle2, ChevronRight, Code, Terminal } from 'lucide-react';
 
 interface StageDetail {
   id: string;
@@ -58,9 +58,9 @@ const STAGES: StageDetail[] = [
     crate: 'crates/reranker/src/cross_encoder.rs',
     role: 'Deep Neural Cross-Attention Relevance Scoring',
     algorithm: 'Full token-level interaction matrix with logistic sigmoid activation',
-    mathFormula: 'P(\\text{relevant} \\mid Q, D) = \\sigma\\left(\\text{Transformer}([Q; [SEP]; D])\\right)',
-    complexity: 'O(K \\cdot |Q| \\cdot |D|) on top 50 candidates only',
-    keyFeature: 'Scores (Query, DocText) pairs to capture fine-grained semantic nuances and syntactic alignment, lifting nDCG@10 from 0.589 up to 0.671.',
+    mathFormula: 'S(Q, D) = \\sigma(W \\cdot \\text{BERT}_{\\text{pool}}(\\text{[CLS]} \\circ Q \\circ \\text{[SEP]} \\circ D))',
+    complexity: 'O((|Q| + |D|)^2) evaluated strictly over top-50 candidates',
+    keyFeature: 'Loads native ONNX Runtime C bindings (bge-reranker-base) directly in native code without Python serving overhead. Yields the final +13.9% boost in nDCG@10.',
   },
 ];
 
@@ -68,182 +68,178 @@ export const PipelineFlow: React.FC = () => {
   const [selectedStage, setSelectedStage] = useState<StageDetail>(STAGES[1]);
 
   return (
-    <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="text-center max-w-3xl mx-auto mb-10">
-        <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-          System Architecture & Pipeline Flow
+    <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Title */}
+      <div className="mb-8">
+        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 text-xs font-mono mb-2">
+          <Terminal className="h-3.5 w-3.5 text-zinc-400" />
+          End-to-End System Blueprint
+        </div>
+        <h2 className="text-2xl font-bold text-white tracking-tight">
+          Retrieval Pipeline Architecture
         </h2>
-        <p className="mt-2 text-sm text-slate-400">
-          Click on any pipeline component below to inspect its data structures, time complexity, and Rust implementation crate.
+        <p className="mt-1 text-sm text-zinc-400 max-w-3xl">
+          Dual-engine retrieval pipeline: concurrent sparse inverted and dense vector searches merged via Reciprocal Rank Fusion and finalized with Cross-Encoder attention. Click any stage to inspect.
         </p>
       </div>
 
       {/* Visual Pipeline Layout */}
-      <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-xl backdrop-blur-md mb-8">
+      <div className="p-6 rounded-xl bg-zinc-900/60 border border-zinc-800 mb-8">
         {/* Top: Corpus Ingestion */}
         <div className="flex justify-center mb-6">
-          <div
+          <button
             onClick={() => setSelectedStage(STAGES[0])}
-            className={`cursor-pointer px-6 py-3 rounded-xl border transition-all text-center ${
+            className={`w-full max-w-md px-5 py-3 rounded-lg border transition-colors text-center ${
               selectedStage.id === 'ingestion'
-                ? 'bg-indigo-600/20 border-indigo-500 shadow-lg shadow-indigo-500/20'
-                : 'bg-slate-950 border-slate-800 hover:border-slate-700'
+                ? 'bg-zinc-850 border-zinc-600'
+                : 'bg-zinc-950 border-zinc-800 hover:border-zinc-700'
             }`}
           >
-            <div className="text-xs uppercase font-semibold text-slate-400 tracking-wider">Corpus Ingestion</div>
-            <div className="text-sm font-bold text-white">MS MARCO / Wikipedia Dump (8.8M Docs)</div>
-            <div className="text-[11px] text-slate-400 font-mono mt-0.5">mmap Offset Table (DocID * 8 bytes)</div>
-          </div>
-        </div>
-
-        {/* Fork Arrow */}
-        <div className="flex justify-center -my-3">
-          <div className="w-1/2 border-t-2 border-indigo-500/40 relative">
-            <div className="absolute left-0 -top-1 w-2 h-2 rounded-full bg-indigo-500"></div>
-            <div className="absolute right-0 -top-1 w-2 h-2 rounded-full bg-indigo-500"></div>
-          </div>
+            <div className="text-[11px] uppercase font-mono text-zinc-500 tracking-wider">Corpus Ingestion</div>
+            <div className="text-sm font-semibold text-white">MS MARCO / Wikipedia Corpus (8.8M Docs)</div>
+            <div className="text-xs text-zinc-400 font-mono mt-0.5">mmap Fixed-Width Offset Table (DocID * 8 bytes)</div>
+          </button>
         </div>
 
         {/* Dual Engines Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
           {/* Lexical Engine */}
-          <div
+          <button
             onClick={() => setSelectedStage(STAGES[1])}
-            className={`cursor-pointer p-5 rounded-xl border transition-all ${
+            className={`text-left p-4 sm:p-5 rounded-lg border transition-colors ${
               selectedStage.id === 'lexical'
-                ? 'bg-indigo-600/20 border-indigo-500 shadow-lg shadow-indigo-500/20'
-                : 'bg-slate-950/80 border-slate-800 hover:border-slate-700'
+                ? 'bg-zinc-850 border-zinc-600'
+                : 'bg-zinc-950/70 border-zinc-800 hover:border-zinc-700'
             }`}
           >
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold uppercase text-indigo-400 tracking-wider flex items-center gap-1.5">
-                <Zap className="h-4 w-4" /> Lexical Engine (Rust)
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-xs font-mono uppercase text-zinc-300 tracking-wider flex items-center gap-1.5 font-semibold">
+                <Zap className="h-3.5 w-3.5 text-zinc-400" /> Lexical Engine (Rust)
               </span>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 font-mono border border-indigo-500/20">
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 font-mono border border-zinc-700">
                 O(log N) Pruning
               </span>
             </div>
-            <h4 className="text-base font-bold text-white">SIMD Elias-Fano & Block-Max WAND</h4>
-            <ul className="text-xs text-slate-300 space-y-1.5 mt-3 font-mono">
-              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-indigo-400" /> Zero-allocation Porter Stemmer</li>
-              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-indigo-400" /> 128-posting Elias-Fano blocks</li>
-              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-indigo-400" /> Dynamic score upper bounds (theta)</li>
+            <h4 className="text-sm font-semibold text-white">SIMD Elias-Fano & Block-Max WAND</h4>
+            <ul className="text-xs text-zinc-400 space-y-1.5 mt-2.5 font-mono">
+              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-zinc-400" /> Zero-allocation Porter Stemmer</li>
+              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-zinc-400" /> 128-posting Elias-Fano blocks</li>
+              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-zinc-400" /> Dynamic score upper bounds (theta)</li>
             </ul>
-          </div>
+          </button>
 
           {/* Dense Engine */}
-          <div
+          <button
             onClick={() => setSelectedStage(STAGES[2])}
-            className={`cursor-pointer p-5 rounded-xl border transition-all ${
+            className={`text-left p-4 sm:p-5 rounded-lg border transition-colors ${
               selectedStage.id === 'dense'
-                ? 'bg-cyan-600/20 border-cyan-500 shadow-lg shadow-cyan-500/20'
-                : 'bg-slate-950/80 border-slate-800 hover:border-slate-700'
+                ? 'bg-zinc-850 border-zinc-600'
+                : 'bg-zinc-950/70 border-zinc-800 hover:border-zinc-700'
             }`}
           >
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold uppercase text-cyan-400 tracking-wider flex items-center gap-1.5">
-                <GitBranch className="h-4 w-4" /> Dense Engine (Rust)
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-xs font-mono uppercase text-zinc-300 tracking-wider flex items-center gap-1.5 font-semibold">
+                <GitBranch className="h-3.5 w-3.5 text-zinc-400" /> Dense Engine (Rust)
               </span>
-              <span className="text-[10px] px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 font-mono border border-cyan-500/20">
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 font-mono border border-zinc-700">
                 -75% RAM (SQ8)
               </span>
             </div>
-            <h4 className="text-base font-bold text-white">Quantized HNSW Graph Traversal</h4>
-            <ul className="text-xs text-slate-300 space-y-1.5 mt-3 font-mono">
-              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-cyan-400" /> SQ8 8-bit Scalar Quantization</li>
-              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-cyan-400" /> Multi-layer navigable small world</li>
-              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-cyan-400" /> Heuristic diversity edge selection</li>
+            <h4 className="text-sm font-semibold text-white">Quantized HNSW Graph Traversal</h4>
+            <ul className="text-xs text-zinc-400 space-y-1.5 mt-2.5 font-mono">
+              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-zinc-400" /> SQ8 8-bit Scalar Quantization</li>
+              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-zinc-400" /> Multi-layer navigable small world</li>
+              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-zinc-400" /> Heuristic diversity edge selection</li>
             </ul>
-          </div>
+          </button>
         </div>
 
-        {/* Join Arrow */}
-        <div className="flex justify-center -my-3">
-          <div className="w-1/2 border-b-2 border-indigo-500/40 relative">
-            <div className="absolute left-1/2 -bottom-2 -translate-x-1/2 w-3 h-3 rotate-45 border-r-2 border-b-2 border-indigo-400"></div>
-          </div>
-        </div>
-
-        {/* L1 Fusion Node */}
-        <div className="flex justify-center mt-6 mb-4">
-          <div
+        {/* L1 Fusion */}
+        <div className="flex justify-center my-4">
+          <button
             onClick={() => setSelectedStage(STAGES[3])}
-            className={`cursor-pointer px-6 py-3.5 rounded-xl border transition-all text-center max-w-md w-full ${
+            className={`w-full max-w-lg p-4 rounded-lg border transition-colors text-center ${
               selectedStage.id === 'rrf'
-                ? 'bg-purple-600/20 border-purple-500 shadow-lg shadow-purple-500/20'
-                : 'bg-slate-950 border-slate-800 hover:border-slate-700'
+                ? 'bg-zinc-850 border-zinc-600'
+                : 'bg-zinc-950 border-zinc-800 hover:border-zinc-700'
             }`}
           >
-            <div className="text-xs uppercase font-semibold text-purple-400 tracking-wider">Reciprocal Rank Fusion (L1)</div>
-            <div className="text-sm font-bold text-white">Merge Top-1,000 Deduplicated Candidates</div>
-            <div className="text-[11px] text-slate-400 font-mono mt-0.5">RRF Score = 1/(60 + rank_lex) + 1/(60 + rank_dense)</div>
-          </div>
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <span className="text-xs font-mono uppercase text-zinc-300 font-semibold tracking-wider">
+                Reciprocal Rank Fusion (L1)
+              </span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 font-mono border border-zinc-700">
+                Top-1,000 Candidates
+              </span>
+            </div>
+            <p className="text-xs text-zinc-400 font-mono">
+              1 / (60 + rank_lexical) + 1 / (60 + rank_dense)
+            </p>
+          </button>
         </div>
 
-        <div className="flex justify-center my-2 text-indigo-400">
-          <ChevronRight className="h-5 w-5 rotate-90" />
-        </div>
-
-        {/* L2 Reranker Node */}
-        <div className="flex justify-center">
-          <div
+        {/* L2 Reranking */}
+        <div className="flex justify-center mt-4">
+          <button
             onClick={() => setSelectedStage(STAGES[4])}
-            className={`cursor-pointer px-6 py-3.5 rounded-xl border transition-all text-center max-w-md w-full ${
+            className={`w-full max-w-md p-4 rounded-lg border transition-colors text-center ${
               selectedStage.id === 'reranker'
-                ? 'bg-emerald-600/20 border-emerald-500 shadow-lg shadow-emerald-500/20'
-                : 'bg-slate-950 border-slate-800 hover:border-slate-700'
+                ? 'bg-zinc-850 border-zinc-600'
+                : 'bg-zinc-950 border-zinc-800 hover:border-zinc-700'
             }`}
           >
-            <div className="text-xs uppercase font-semibold text-emerald-400 tracking-wider">Cross-Encoder Reranker (L2)</div>
-            <div className="text-sm font-bold text-white">Neural Token Cross-Attention on Top 50</div>
-            <div className="text-[11px] text-slate-400 font-mono mt-0.5">Yields Final Top-10 Results (nDCG@10 = 0.671)</div>
-          </div>
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <span className="text-xs font-mono uppercase text-zinc-300 font-semibold tracking-wider">
+                Cross-Encoder Reranker (L2)
+              </span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 font-mono border border-zinc-700">
+                Top-50 Evaluated
+              </span>
+            </div>
+            <p className="text-xs text-zinc-400 font-mono">
+              ONNX Runtime C API · bge-reranker-base · Softmax Top-10
+            </p>
+          </button>
         </div>
       </div>
 
       {/* Selected Stage Detail Panel */}
-      <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-4 mb-4">
+      <div className="p-6 rounded-xl bg-zinc-900 border border-zinc-800 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-850 pb-4">
           <div>
-            <span className="text-xs font-semibold uppercase text-indigo-400 tracking-wider">{selectedStage.role}</span>
-            <h3 className="text-xl font-bold text-white">{selectedStage.name}</h3>
+            <span className="text-[11px] font-mono uppercase text-zinc-500 tracking-wider">Active Stage Inspection</span>
+            <h3 className="text-lg font-bold text-white mt-0.5">{selectedStage.name}</h3>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 font-mono flex items-center gap-1.5">
-              <Code className="h-3.5 w-3.5 text-indigo-400" />
-              {selectedStage.crate}
-            </span>
+          <div className="font-mono text-xs text-zinc-300 px-2.5 py-1 rounded bg-zinc-950 border border-zinc-800 self-start sm:self-auto">
+            {selectedStage.crate}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <h5 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Architecture & Mechanism</h5>
-            <p className="text-sm text-slate-200 leading-relaxed">{selectedStage.keyFeature}</p>
+            <h5 className="text-xs font-mono uppercase text-zinc-500 mb-1">Algorithmic Strategy</h5>
+            <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed font-sans">{selectedStage.algorithm}</p>
+          </div>
+          <div>
+            <h5 className="text-xs font-mono uppercase text-zinc-500 mb-1">Complexity & Overhead</h5>
+            <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed font-mono">{selectedStage.complexity}</p>
+          </div>
+        </div>
 
-            <div className="mt-4 p-3 rounded-lg bg-slate-950/80 border border-slate-800">
-              <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Complexity & Guarantees</div>
-              <div className="text-sm text-emerald-400 font-mono font-medium">{selectedStage.complexity}</div>
+        {selectedStage.mathFormula && (
+          <div>
+            <h5 className="text-xs font-mono uppercase text-zinc-500 mb-1">Mathematical Formulation</h5>
+            <div className="p-3 rounded bg-zinc-950 border border-zinc-850 font-mono text-xs sm:text-sm text-zinc-200 overflow-x-auto">
+              {selectedStage.mathFormula}
             </div>
           </div>
+        )}
 
-          <div>
-            {selectedStage.mathFormula && (
-              <div>
-                <h5 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Mathematical Formulation</h5>
-                <div className="p-3 rounded-lg bg-slate-950 font-mono text-xs text-indigo-300 border border-slate-800 overflow-x-auto">
-                  {selectedStage.mathFormula}
-                </div>
-              </div>
-            )}
-
-            <div className="mt-4">
-              <h5 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Algorithmic Design</h5>
-              <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800 text-xs text-slate-300 leading-relaxed font-mono">
-                {selectedStage.algorithm}
-              </div>
-            </div>
-          </div>
+        <div>
+          <h5 className="text-xs font-mono uppercase text-zinc-500 mb-1">Engineering Implementation</h5>
+          <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed bg-zinc-950/60 p-3 rounded border border-zinc-850 font-sans">
+            {selectedStage.keyFeature}
+          </p>
         </div>
       </div>
     </div>
