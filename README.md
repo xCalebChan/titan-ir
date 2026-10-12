@@ -1,5 +1,11 @@
 # TitanIR: High-Throughput Hybrid Retrieval Engine
 
+[![Live Web App](https://img.shields.io/badge/Vercel-Live_Demo-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://web-zeta-nine-46.vercel.app)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/xCalebChan/titan-ir)
+[![Rust](https://img.shields.io/badge/Rust-2021_Edition-orange?style=for-the-badge&logo=rust)](https://www.rust-lang.org/)
+
+🔗 **Live Interactive Showcase:** [https://web-zeta-nine-46.vercel.app](https://web-zeta-nine-46.vercel.app)
+
 ```
                  Corpus (MS MARCO / Wikipedia Dump)
                                  │
