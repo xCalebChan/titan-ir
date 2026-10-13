@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, BookOpen, ChevronRight, Hash, Code2, Calculator, BookMarked, CheckCircle2, Sparkles, Filter } from 'lucide-react';
+import { Search, BookOpen, ChevronRight, Hash, Code2, Calculator, BookMarked, CheckCircle2, Sparkles, SlidersHorizontal, X, Check } from 'lucide-react';
 import { DICTIONARY_TERMS, CATEGORIES, ALGORITHM_STATUS_FILTERS } from '../dictionaryData';
 import { MathFormula } from './MathFormula';
 
@@ -7,6 +7,7 @@ export const Dictionary: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedTermId, setSelectedTermId] = useState<string>(DICTIONARY_TERMS[0].id);
 
   const filteredTerms = useMemo(() => {
@@ -35,6 +36,7 @@ export const Dictionary: React.FC = () => {
     return found || filteredTerms[0] || DICTIONARY_TERMS[0];
   }, [selectedTermId, filteredTerms]);
 
+  const activeFiltersCount = (selectedStatus !== 'all' ? 1 : 0) + (selectedCategory !== 'all' ? 1 : 0);
   const standardCount = DICTIONARY_TERMS.filter(t => t.algorithmType === 'standard').length;
   const roadmapCount = DICTIONARY_TERMS.filter(t => t.algorithmType === 'roadmap').length;
 
@@ -63,70 +65,204 @@ export const Dictionary: React.FC = () => {
           </div>
         </div>
 
-        {/* Search & Filter Controls */}
-        <div className="mt-5 space-y-3">
-          {/* Search Input */}
-          <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#70757a] pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search concepts, equations, files, or algorithms (e.g. BM25, Cosine, Elias-Fano, HNSW)..."
-              className="w-full pl-10 pr-16 py-2.5 rounded-full border border-[#dfe1e5] hover:border-[#dfe1e5] focus:outline-none focus:border-transparent google-search-shadow text-sm text-[#202124]"
-            />
-            {searchQuery && (
+        {/* Search & Single Filter Popup Control */}
+        <div className="mt-5 space-y-2.5">
+          <div className="flex items-center gap-2">
+            {/* Search Input */}
+            <div className="relative flex-1">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#70757a] pointer-events-none" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search concepts, equations, files, or algorithms (e.g. BM25, Cosine, Elias-Fano, HNSW)..."
+                className="w-full pl-10 pr-16 py-2.5 rounded-full border border-[#dfe1e5] hover:border-[#dfe1e5] focus:outline-none focus:border-transparent google-search-shadow text-sm text-[#202124]"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-[#70757a] hover:text-[#202124]"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+
+            {/* Single Popup Filter Button */}
+            <div className="relative">
               <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-[#70757a] hover:text-[#202124]"
+                type="button"
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-full border text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
+                  activeFiltersCount > 0
+                    ? 'bg-[#e8f0fe] border-[#1a73e8] text-[#1a73e8] shadow-sm'
+                    : 'bg-white border-[#dfe1e5] text-[#3c4043] hover:bg-[#f8f9fa] hover:border-[#bdc1c6]'
+                }`}
+                title="Filter dictionary by algorithm status and category"
               >
-                Clear
+                <SlidersHorizontal className="h-3.5 w-3.5" />
+                <span>Filters</span>
+                {activeFiltersCount > 0 && (
+                  <span className="w-5 h-5 rounded-full bg-[#1a73e8] text-white text-[11px] font-semibold flex items-center justify-center">
+                    {activeFiltersCount}
+                  </span>
+                )}
               </button>
-            )}
+
+              {/* Single Filter Popup */}
+              {isFilterOpen && (
+                <>
+                  {/* Backdrop */}
+                  <div
+                    className="fixed inset-0 z-40 bg-black/10 backdrop-blur-[0.5px]"
+                    onClick={() => setIsFilterOpen(false)}
+                  />
+
+                  {/* Popover Card */}
+                  <div className="absolute right-0 top-full mt-2 w-[340px] sm:w-[420px] max-w-[95vw] bg-white border border-[#dadce0] rounded-2xl shadow-xl z-50 p-5 space-y-4 text-left">
+                    {/* Header */}
+                    <div className="flex items-center justify-between border-b border-[#dadce0] pb-3">
+                      <div className="flex items-center gap-2">
+                        <SlidersHorizontal className="h-4 w-4 text-[#1a73e8]" />
+                        <h3 className="text-sm font-medium text-[#202124]">
+                          Filter Dictionary Concepts
+                        </h3>
+                      </div>
+                      <button
+                        onClick={() => setIsFilterOpen(false)}
+                        className="p-1 rounded-full text-[#70757a] hover:bg-[#f1f3f4] hover:text-[#202124] transition-colors"
+                        title="Close"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+
+                    {/* Section 1: Algorithm Status */}
+                    <div>
+                      <div className="text-xs font-semibold text-[#202124] mb-1">
+                        Algorithm Status
+                      </div>
+                      <p className="text-[11px] text-[#5f6368] mb-2.5">
+                        Select whether to view active baseline algorithms or planned optimizations.
+                      </p>
+                      <div className="space-y-1.5">
+                        {ALGORITHM_STATUS_FILTERS.map((status) => {
+                          const isSelected = selectedStatus === status.id;
+                          return (
+                            <button
+                              key={status.id}
+                              onClick={() => setSelectedStatus(status.id)}
+                              className={`w-full text-left px-3 py-2 rounded-xl text-xs flex items-center justify-between border transition-all cursor-pointer ${
+                                isSelected
+                                  ? 'bg-[#e8f0fe] border-[#1a73e8] text-[#1a73e8] font-medium'
+                                  : 'bg-[#f8f9fa] border-transparent text-[#3c4043] hover:bg-[#f1f3f4]'
+                              }`}
+                            >
+                              <span>{status.label}</span>
+                              {isSelected && <Check className="h-3.5 w-3.5 text-[#1a73e8]" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Section 2: Topic Category */}
+                    <div>
+                      <div className="text-xs font-semibold text-[#202124] mb-1">
+                        Topic Category
+                      </div>
+                      <p className="text-[11px] text-[#5f6368] mb-2.5">
+                        Filter by information retrieval domain.
+                      </p>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {CATEGORIES.map((cat) => {
+                          const isSelected = selectedCategory === cat.id;
+                          return (
+                            <button
+                              key={cat.id}
+                              onClick={() => setSelectedCategory(cat.id)}
+                              className={`text-left px-2.5 py-2 rounded-xl text-xs border transition-all truncate cursor-pointer ${
+                                isSelected
+                                  ? 'bg-[#1a73e8] border-[#1a73e8] text-white font-medium'
+                                  : 'bg-[#f8f9fa] border-transparent text-[#3c4043] hover:bg-[#f1f3f4]'
+                              }`}
+                              title={cat.label}
+                            >
+                              {cat.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Footer Actions */}
+                    <div className="flex items-center justify-between pt-3 border-t border-[#dadce0]">
+                      <button
+                        onClick={() => {
+                          setSelectedStatus('all');
+                          setSelectedCategory('all');
+                        }}
+                        disabled={activeFiltersCount === 0}
+                        className={`text-xs ${
+                          activeFiltersCount > 0
+                            ? 'text-[#1a73e8] hover:underline cursor-pointer'
+                            : 'text-[#9aa0a6] cursor-not-allowed'
+                        }`}
+                      >
+                        Reset All
+                      </button>
+                      <button
+                        onClick={() => setIsFilterOpen(false)}
+                        className="px-4 py-1.5 rounded-full bg-[#1a73e8] text-white text-xs font-medium hover:bg-[#1557b0] transition-colors cursor-pointer"
+                      >
+                        Done
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
 
-          {/* Dual Filter Rows: Algorithm Status + Category */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-1">
-            {/* Algorithm Status Filter (Standard Baseline vs Roadmap TODO) */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
-              <span className="text-xs text-[#70757a] flex items-center gap-1 mr-1 shrink-0 font-medium">
-                <Filter className="h-3 w-3" /> Status:
-              </span>
-              {ALGORITHM_STATUS_FILTERS.map((status) => (
-                <button
-                  key={status.id}
-                  onClick={() => setSelectedStatus(status.id)}
-                  className={`px-3 py-1.5 rounded-full text-xs transition-colors whitespace-nowrap ${
-                    selectedStatus === status.id
-                      ? 'bg-[#202124] text-white font-medium'
-                      : 'bg-[#f8f9fa] border border-[#dadce0] text-[#3c4043] hover:bg-[#f1f3f4]'
-                  }`}
-                >
-                  {status.label}
-                </button>
-              ))}
+          {/* Active Filter Chips (Only rendered when filtered) */}
+          {activeFiltersCount > 0 && (
+            <div className="flex items-center gap-1.5 flex-wrap pt-0.5 text-xs">
+              <span className="text-[#70757a] text-[11px] font-medium mr-1">Active:</span>
+              {selectedStatus !== 'all' && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#e8f0fe] text-[#1a73e8] border border-[#d2e3fc] text-xs font-medium">
+                  {ALGORITHM_STATUS_FILTERS.find((f) => f.id === selectedStatus)?.label}
+                  <button
+                    onClick={() => setSelectedStatus('all')}
+                    className="hover:text-[#174ea6] cursor-pointer"
+                    title="Remove status filter"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              )}
+              {selectedCategory !== 'all' && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#e8f0fe] text-[#1a73e8] border border-[#d2e3fc] text-xs font-medium">
+                  {CATEGORIES.find((c) => c.id === selectedCategory)?.label}
+                  <button
+                    onClick={() => setSelectedCategory('all')}
+                    className="hover:text-[#174ea6] cursor-pointer"
+                    title="Remove category filter"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              )}
+              <button
+                onClick={() => {
+                  setSelectedStatus('all');
+                  setSelectedCategory('all');
+                }}
+                className="text-xs text-[#1a73e8] hover:underline ml-1 cursor-pointer"
+              >
+                Clear all
+              </button>
             </div>
-
-            {/* Category Filter */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
-              <span className="text-xs text-[#70757a] mr-1 shrink-0 font-medium">
-                Category:
-              </span>
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-2.5 py-1 rounded-full text-xs transition-colors whitespace-nowrap ${
-                    selectedCategory === cat.id
-                      ? 'bg-[#1a73e8] text-white font-medium'
-                      : 'bg-[#f8f9fa] border border-[#dadce0] text-[#3c4043] hover:bg-[#f1f3f4]'
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-          </div>
+          )}
         </div>
       </div>
 
