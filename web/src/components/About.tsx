@@ -51,6 +51,52 @@ export const About: React.FC<AboutProps> = ({ onGoToSearch, onGoToDictionary }) 
           </div>
         </section>
 
+        {/* Section: Why is it called TitanIR? */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-2.5">
+            <div className="h-8 w-8 rounded-full bg-[#fef7e0] dark:bg-[#f29900]/20 flex items-center justify-center text-[#ea8600] dark:text-[#fdd663]">
+              <Globe className="h-4 w-4" />
+            </div>
+            <h2 className="text-2xl font-normal text-[#202124] dark:text-white">
+              The Name: Why &quot;TitanIR&quot;?
+            </h2>
+          </div>
+
+          <div className="bg-[#f8f9fa] dark:bg-[#303134] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-6 sm:p-8 space-y-4">
+            <p className="text-base text-[#3c4043] dark:text-[#bdc1c6] leading-relaxed">
+              The name <strong>TitanIR</strong> is a deliberate fusion of its domain and its engineering philosophy:
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+              <div className="p-4 bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl space-y-1.5">
+                <div className="text-sm font-semibold text-[#1a73e8] dark:text-[#8ab4f8]">
+                  &quot;IR&quot; — Information Retrieval
+                </div>
+                <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
+                  The foundational computer science discipline governing search systems, inverted indexes, relevance ranking algorithms, vector geometry, and standard evaluation metrics like nDCG and MRR.
+                </p>
+              </div>
+
+              <div className="p-4 bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] rounded-xl space-y-1.5">
+                <div className="text-sm font-semibold text-[#ea8600] dark:text-[#fdd663]">
+                  &quot;Titan&quot; — Scale & Heavy-Duty Performance
+                </div>
+                <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
+                  In mythology, the Titans represented immense strength capable of carrying cosmic weight. In systems architecture, Titan reflects the engine&apos;s ability to swallow industrial corpora (such as the 8.8M MS MARCO collection) without flinching under multi-threaded load.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-3 pt-2 text-sm text-[#3c4043] dark:text-[#bdc1c6] leading-relaxed">
+              <p>
+                <strong>The Two Pillars of Retrieval:</strong> Just as the Titans upheld the celestial spheres upon twin pillars, TitanIR is structurally supported by two co-equal pillars: the <em>Sparse Lexical Engine</em> (SIMD Elias-Fano Block-Max WAND) and the <em>Dense Semantic Engine</em> (SQ8 Quantized HNSW).
+              </p>
+              <p>
+                <strong>Systems Durability & Memory Safety:</strong> Built with Rust&apos;s fearless concurrency, zero-allocation query hot loops, and OS <code>mmap</code> virtual memory paging, the engine is designed for titanium-like resilience — avoiding garbage collection freezes, lock contention, and memory fragmentation.
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* Section 2: What TitanIR Is */}
         <section className="space-y-4">
           <div className="flex items-center gap-2.5">
