@@ -68,36 +68,36 @@ export const PipelineFlow: React.FC = () => {
   const [selectedStage, setSelectedStage] = useState<StageDetail>(STAGES[1]);
 
   return (
-    <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 font-sans bg-white text-[#202124]">
       {/* Title */}
-      <div className="mb-8">
-        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 text-xs font-mono mb-2">
-          <Terminal className="h-3.5 w-3.5 text-zinc-400" />
+      <div className="mb-6">
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#e8f0fe] text-[#1a73e8] text-xs font-medium mb-2">
+          <Layers className="h-3.5 w-3.5" />
           End-to-End System Blueprint
         </div>
-        <h2 className="text-2xl font-bold text-white tracking-tight">
+        <h2 className="text-2xl sm:text-3xl font-normal text-[#202124] tracking-tight">
           Retrieval Pipeline Architecture
         </h2>
-        <p className="mt-1 text-sm text-zinc-400 max-w-3xl">
+        <p className="mt-1 text-sm text-[#5f6368] max-w-3xl leading-relaxed">
           Dual-engine retrieval pipeline: concurrent sparse inverted and dense vector searches merged via Reciprocal Rank Fusion and finalized with Cross-Encoder attention. Click any stage to inspect.
         </p>
       </div>
 
       {/* Visual Pipeline Layout */}
-      <div className="p-6 rounded-xl bg-zinc-900/60 border border-zinc-800 mb-8">
+      <div className="p-6 rounded-2xl bg-[#f8f9fa] border border-[#dadce0] google-card-shadow mb-6">
         {/* Top: Corpus Ingestion */}
         <div className="flex justify-center mb-6">
           <button
             onClick={() => setSelectedStage(STAGES[0])}
-            className={`w-full max-w-md px-5 py-3 rounded-lg border transition-colors text-center ${
+            className={`w-full max-w-md px-5 py-3 rounded-xl border transition-all text-center ${
               selectedStage.id === 'ingestion'
-                ? 'bg-zinc-850 border-zinc-600'
-                : 'bg-zinc-950 border-zinc-800 hover:border-zinc-700'
+                ? 'bg-[#e8f0fe] border-[#1a73e8] shadow-sm'
+                : 'bg-white border-[#dadce0] hover:bg-[#f1f3f4]'
             }`}
           >
-            <div className="text-[11px] uppercase font-mono text-zinc-500 tracking-wider">Corpus Ingestion</div>
-            <div className="text-sm font-semibold text-white">MS MARCO / Wikipedia Corpus (8.8M Docs)</div>
-            <div className="text-xs text-zinc-400 font-mono mt-0.5">mmap Fixed-Width Offset Table (DocID * 8 bytes)</div>
+            <div className="text-[11px] uppercase font-mono text-[#70757a] tracking-wider">Corpus Ingestion</div>
+            <div className="text-sm font-medium text-[#202124]">MS MARCO / Wikipedia Corpus (8.8M Docs)</div>
+            <div className="text-xs text-[#5f6368] font-mono mt-0.5">mmap Fixed-Width Offset Table (DocID * 8 bytes)</div>
           </button>
         </div>
 
@@ -106,50 +106,50 @@ export const PipelineFlow: React.FC = () => {
           {/* Lexical Engine */}
           <button
             onClick={() => setSelectedStage(STAGES[1])}
-            className={`text-left p-4 sm:p-5 rounded-lg border transition-colors ${
+            className={`text-left p-4 sm:p-5 rounded-xl border transition-all ${
               selectedStage.id === 'lexical'
-                ? 'bg-zinc-850 border-zinc-600'
-                : 'bg-zinc-950/70 border-zinc-800 hover:border-zinc-700'
+                ? 'bg-[#e8f0fe] border-[#1a73e8] shadow-sm'
+                : 'bg-white border-[#dadce0] hover:bg-[#f1f3f4]'
             }`}
           >
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-xs font-mono uppercase text-zinc-300 tracking-wider flex items-center gap-1.5 font-semibold">
-                <Zap className="h-3.5 w-3.5 text-zinc-400" /> Lexical Engine (Rust)
+              <span className="text-xs font-medium uppercase text-[#1a73e8] tracking-wider flex items-center gap-1.5">
+                <Zap className="h-3.5 w-3.5 text-[#1a73e8]" /> Lexical Engine (Rust)
               </span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 font-mono border border-zinc-700">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#f1f3f4] text-[#5f6368] font-mono border border-[#dadce0]">
                 O(log N) Pruning
               </span>
             </div>
-            <h4 className="text-sm font-semibold text-white">SIMD Elias-Fano & Block-Max WAND</h4>
-            <ul className="text-xs text-zinc-400 space-y-1.5 mt-2.5 font-mono">
-              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-zinc-400" /> Zero-allocation Porter Stemmer</li>
-              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-zinc-400" /> 128-posting Elias-Fano blocks</li>
-              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-zinc-400" /> Dynamic score upper bounds (theta)</li>
+            <h4 className="text-sm font-medium text-[#202124]">SIMD Elias-Fano & Block-Max WAND</h4>
+            <ul className="text-xs text-[#5f6368] space-y-1.5 mt-2.5 font-mono">
+              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-[#137333]" /> Zero-allocation Porter Stemmer</li>
+              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-[#137333]" /> 128-posting Elias-Fano blocks</li>
+              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-[#137333]" /> Dynamic score upper bounds (θ)</li>
             </ul>
           </button>
 
           {/* Dense Engine */}
           <button
             onClick={() => setSelectedStage(STAGES[2])}
-            className={`text-left p-4 sm:p-5 rounded-lg border transition-colors ${
+            className={`text-left p-4 sm:p-5 rounded-xl border transition-all ${
               selectedStage.id === 'dense'
-                ? 'bg-zinc-850 border-zinc-600'
-                : 'bg-zinc-950/70 border-zinc-800 hover:border-zinc-700'
+                ? 'bg-[#e8f0fe] border-[#1a73e8] shadow-sm'
+                : 'bg-white border-[#dadce0] hover:bg-[#f1f3f4]'
             }`}
           >
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-xs font-mono uppercase text-zinc-300 tracking-wider flex items-center gap-1.5 font-semibold">
-                <GitBranch className="h-3.5 w-3.5 text-zinc-400" /> Dense Engine (Rust)
+              <span className="text-xs font-medium uppercase text-[#137333] tracking-wider flex items-center gap-1.5">
+                <GitBranch className="h-3.5 w-3.5 text-[#137333]" /> Dense Engine (Rust)
               </span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 font-mono border border-zinc-700">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#f1f3f4] text-[#5f6368] font-mono border border-[#dadce0]">
                 -75% RAM (SQ8)
               </span>
             </div>
-            <h4 className="text-sm font-semibold text-white">Quantized HNSW Graph Traversal</h4>
-            <ul className="text-xs text-zinc-400 space-y-1.5 mt-2.5 font-mono">
-              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-zinc-400" /> SQ8 8-bit Scalar Quantization</li>
-              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-zinc-400" /> Multi-layer navigable small world</li>
-              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-zinc-400" /> Heuristic diversity edge selection</li>
+            <h4 className="text-sm font-medium text-[#202124]">Quantized HNSW Graph Traversal</h4>
+            <ul className="text-xs text-[#5f6368] space-y-1.5 mt-2.5 font-mono">
+              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-[#137333]" /> SQ8 8-bit Scalar Quantization</li>
+              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-[#137333]" /> Multi-layer navigable small world</li>
+              <li className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-[#137333]" /> Heuristic diversity edge selection</li>
             </ul>
           </button>
         </div>
@@ -158,21 +158,21 @@ export const PipelineFlow: React.FC = () => {
         <div className="flex justify-center my-4">
           <button
             onClick={() => setSelectedStage(STAGES[3])}
-            className={`w-full max-w-lg p-4 rounded-lg border transition-colors text-center ${
+            className={`w-full max-w-lg p-4 rounded-xl border transition-all text-center ${
               selectedStage.id === 'rrf'
-                ? 'bg-zinc-850 border-zinc-600'
-                : 'bg-zinc-950 border-zinc-800 hover:border-zinc-700'
+                ? 'bg-[#e8f0fe] border-[#1a73e8] shadow-sm'
+                : 'bg-white border-[#dadce0] hover:bg-[#f1f3f4]'
             }`}
           >
             <div className="flex items-center justify-center gap-2 mb-1">
-              <span className="text-xs font-mono uppercase text-zinc-300 font-semibold tracking-wider">
+              <span className="text-xs font-medium uppercase text-[#202124] tracking-wider">
                 Reciprocal Rank Fusion (L1)
               </span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 font-mono border border-zinc-700">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#f1f3f4] text-[#5f6368] font-mono border border-[#dadce0]">
                 Top-1,000 Candidates
               </span>
             </div>
-            <p className="text-xs text-zinc-400 font-mono">
+            <p className="text-xs text-[#5f6368] font-mono">
               1 / (60 + rank_lexical) + 1 / (60 + rank_dense)
             </p>
           </button>
@@ -182,21 +182,21 @@ export const PipelineFlow: React.FC = () => {
         <div className="flex justify-center mt-4">
           <button
             onClick={() => setSelectedStage(STAGES[4])}
-            className={`w-full max-w-md p-4 rounded-lg border transition-colors text-center ${
+            className={`w-full max-w-md p-4 rounded-xl border transition-all text-center ${
               selectedStage.id === 'reranker'
-                ? 'bg-zinc-850 border-zinc-600'
-                : 'bg-zinc-950 border-zinc-800 hover:border-zinc-700'
+                ? 'bg-[#e8f0fe] border-[#1a73e8] shadow-sm'
+                : 'bg-white border-[#dadce0] hover:bg-[#f1f3f4]'
             }`}
           >
             <div className="flex items-center justify-center gap-2 mb-1">
-              <span className="text-xs font-mono uppercase text-zinc-300 font-semibold tracking-wider">
+              <span className="text-xs font-medium uppercase text-[#202124] tracking-wider">
                 Cross-Encoder Reranker (L2)
               </span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 font-mono border border-zinc-700">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#f1f3f4] text-[#5f6368] font-mono border border-[#dadce0]">
                 Top-50 Evaluated
               </span>
             </div>
-            <p className="text-xs text-zinc-400 font-mono">
+            <p className="text-xs text-[#5f6368] font-mono">
               ONNX Runtime C API · bge-reranker-base · Softmax Top-10
             </p>
           </button>
@@ -204,40 +204,40 @@ export const PipelineFlow: React.FC = () => {
       </div>
 
       {/* Selected Stage Detail Panel */}
-      <div className="p-6 rounded-xl bg-zinc-900 border border-zinc-800 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-850 pb-4">
+      <div className="p-6 rounded-2xl bg-white border border-[#dadce0] google-card-shadow space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#dadce0] pb-4">
           <div>
-            <span className="text-[11px] font-mono uppercase text-zinc-500 tracking-wider">Active Stage Inspection</span>
-            <h3 className="text-lg font-bold text-white mt-0.5">{selectedStage.name}</h3>
+            <span className="text-[11px] font-mono uppercase text-[#70757a] tracking-wider">Stage Inspection</span>
+            <h3 className="text-xl font-normal text-[#202124] mt-0.5">{selectedStage.name}</h3>
           </div>
-          <div className="font-mono text-xs text-zinc-300 px-2.5 py-1 rounded bg-zinc-950 border border-zinc-800 self-start sm:self-auto">
+          <div className="font-mono text-xs text-[#5f6368] px-3 py-1 rounded-full bg-[#f8f9fa] border border-[#dadce0] self-start sm:self-auto">
             {selectedStage.crate}
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <h5 className="text-xs font-mono uppercase text-zinc-500 mb-1">Algorithmic Strategy</h5>
-            <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed font-sans">{selectedStage.algorithm}</p>
+            <h5 className="text-xs font-mono uppercase text-[#70757a] mb-1">Algorithmic Strategy</h5>
+            <p className="text-xs sm:text-sm text-[#3c4043] leading-relaxed font-sans">{selectedStage.algorithm}</p>
           </div>
           <div>
-            <h5 className="text-xs font-mono uppercase text-zinc-500 mb-1">Complexity & Overhead</h5>
-            <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed font-mono">{selectedStage.complexity}</p>
+            <h5 className="text-xs font-mono uppercase text-[#70757a] mb-1">Complexity & Overhead</h5>
+            <p className="text-xs sm:text-sm text-[#3c4043] leading-relaxed font-mono">{selectedStage.complexity}</p>
           </div>
         </div>
 
         {selectedStage.mathFormula && (
           <div>
-            <h5 className="text-xs font-mono uppercase text-zinc-500 mb-1">Mathematical Formulation</h5>
-            <div className="p-3 rounded bg-zinc-950 border border-zinc-850 font-mono text-xs sm:text-sm text-zinc-200 overflow-x-auto">
+            <h5 className="text-xs font-mono uppercase text-[#70757a] mb-1">Mathematical Formulation</h5>
+            <div className="p-3 rounded-xl bg-[#f8f9fa] border border-[#dadce0] font-mono text-xs sm:text-sm text-[#202124] overflow-x-auto">
               {selectedStage.mathFormula}
             </div>
           </div>
         )}
 
         <div>
-          <h5 className="text-xs font-mono uppercase text-zinc-500 mb-1">Engineering Implementation</h5>
-          <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed bg-zinc-950/60 p-3 rounded border border-zinc-850 font-sans">
+          <h5 className="text-xs font-mono uppercase text-[#70757a] mb-1">Engineering Implementation</h5>
+          <p className="text-xs sm:text-sm text-[#5f6368] leading-relaxed bg-[#f8f9fa] p-3 rounded-xl border border-[#dadce0] font-sans">
             {selectedStage.keyFeature}
           </p>
         </div>

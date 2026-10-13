@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GitBranch, Play, RotateCcw, ChevronRight, Terminal } from 'lucide-react';
+import { GitBranch, Play, RotateCcw, ChevronRight } from 'lucide-react';
 
 interface TraversalStep {
   step: number;
@@ -59,41 +59,41 @@ export const HnswVisualizer: React.FC = () => {
   };
 
   return (
-    <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 font-sans bg-white text-[#202124]">
       {/* Title */}
-      <div className="mb-8">
-        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 text-xs font-mono mb-2">
-          <Terminal className="h-3.5 w-3.5 text-zinc-400" />
+      <div className="mb-6">
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#e6f4ea] text-[#137333] text-xs font-medium mb-2">
+          <GitBranch className="h-3.5 w-3.5" />
           Dense Vector ANN Traversal
         </div>
-        <h2 className="text-2xl font-bold text-white tracking-tight">
+        <h2 className="text-2xl sm:text-3xl font-normal text-[#202124] tracking-tight">
           HNSW Graph Traversal Visualizer
         </h2>
-        <p className="mt-1 text-sm text-zinc-400 max-w-3xl">
+        <p className="mt-1 text-sm text-[#5f6368] max-w-3xl leading-relaxed">
           Step through greedy logarithmic navigation across the Hierarchical Navigable Small World layers, from top sparse express highways down to dense base-layer beam searches.
         </p>
       </div>
 
       {/* Traversal Step Controller */}
-      <div className="mb-6 p-5 rounded-lg bg-zinc-900 border border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="mb-6 p-6 rounded-2xl bg-[#f8f9fa] border border-[#dadce0] google-card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-mono text-zinc-500 uppercase tracking-wider">
+          <span className="text-xs font-mono text-[#70757a] uppercase tracking-wider">
             Traversal Step {currentStep + 1} of {steps.length}
           </span>
-          <h3 className="text-base font-bold text-white mt-0.5">{current.title}</h3>
-          <p className="text-xs text-zinc-400 max-w-xl mt-1 leading-relaxed">{current.desc}</p>
+          <h3 className="text-lg font-medium text-[#202124] mt-0.5">{current.title}</h3>
+          <p className="text-xs text-[#5f6368] max-w-xl mt-1 leading-relaxed">{current.desc}</p>
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
           <button
             onClick={handleNextStep}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded bg-zinc-100 hover:bg-white text-zinc-950 font-medium text-xs transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#1a73e8] hover:bg-[#1557b0] text-white text-xs font-medium transition-colors shadow-sm"
           >
             <Play className="h-3.5 w-3.5" /> Next Hop
           </button>
           <button
             onClick={handleReset}
-            className="p-2 rounded bg-zinc-800 hover:bg-zinc-750 text-zinc-300 text-xs transition-colors"
+            className="p-2 rounded-full bg-white border border-[#dadce0] hover:bg-[#f1f3f4] text-[#5f6368] text-xs transition-colors"
             title="Reset to Entry Point"
           >
             <RotateCcw className="h-3.5 w-3.5" />
@@ -104,36 +104,36 @@ export const HnswVisualizer: React.FC = () => {
       {/* Multi-Layer Visual Representation */}
       <div className="space-y-4 mb-6">
         {/* Layer 2 */}
-        <div className={`p-4 sm:p-5 rounded-lg border transition-colors ${
+        <div className={`p-5 rounded-2xl border transition-all ${
           current.activeLayer === 2
-            ? 'bg-zinc-900 border-zinc-600'
-            : 'bg-zinc-950/70 border-zinc-800 opacity-60'
+            ? 'bg-[#e8f0fe] border-[#1a73e8] shadow-sm'
+            : 'bg-white border-[#dadce0] opacity-60'
         }`}>
           <div className="flex items-center justify-between mb-3 font-mono">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white text-[#1a73e8] font-bold border border-[#1a73e8]">
                 LAYER 2
               </span>
-              <span className="text-xs font-semibold text-white">Highway Express Routing (Logarithmic Step Decay)</span>
+              <span className="text-xs font-medium text-[#202124]">Highway Express Routing (Logarithmic Step Decay)</span>
             </div>
-            <span className="text-[11px] text-zinc-500">M = 4 connections | ml = 0.36</span>
+            <span className="text-[11px] text-[#70757a]">M = 4 connections | ml = 0.36</span>
           </div>
 
-          <div className="h-20 bg-zinc-950 rounded border border-zinc-850 flex items-center justify-around px-8 relative overflow-hidden">
+          <div className="h-20 bg-white rounded-xl border border-[#dadce0] flex items-center justify-around px-8 relative overflow-hidden">
             <div className={`h-8 w-8 rounded-full flex items-center justify-center font-mono text-xs font-semibold transition-colors ${
               current.activeNodes.includes(3)
-                ? 'bg-zinc-100 text-zinc-950 font-bold'
-                : 'bg-zinc-800 text-zinc-400'
+                ? 'bg-[#1a73e8] text-white font-bold shadow-sm'
+                : 'bg-[#f1f3f4] text-[#5f6368]'
             }`}>
               #3
             </div>
 
-            <div className="h-px flex-1 mx-4 bg-zinc-700" />
+            <div className="h-0.5 flex-1 mx-4 bg-[#dadce0]" />
 
             <div className={`h-8 w-8 rounded-full flex items-center justify-center font-mono text-xs font-semibold transition-colors ${
               current.activeNodes.includes(7)
-                ? 'bg-zinc-100 text-zinc-950 font-bold'
-                : 'bg-zinc-800 text-zinc-400'
+                ? 'bg-[#1a73e8] text-white font-bold shadow-sm'
+                : 'bg-[#f1f3f4] text-[#5f6368]'
             }`}>
               #7
             </div>
@@ -141,61 +141,61 @@ export const HnswVisualizer: React.FC = () => {
         </div>
 
         {/* Layer 1 */}
-        <div className={`p-4 sm:p-5 rounded-lg border transition-colors ${
+        <div className={`p-5 rounded-2xl border transition-all ${
           current.activeLayer === 1
-            ? 'bg-zinc-900 border-zinc-600'
-            : 'bg-zinc-950/70 border-zinc-800 opacity-60'
+            ? 'bg-[#e8f0fe] border-[#1a73e8] shadow-sm'
+            : 'bg-white border-[#dadce0] opacity-60'
         }`}>
           <div className="flex items-center justify-between mb-3 font-mono">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white text-[#1a73e8] font-bold border border-[#1a73e8]">
                 LAYER 1
               </span>
-              <span className="text-xs font-semibold text-white">Intermediate Cluster Routing</span>
+              <span className="text-xs font-medium text-[#202124]">Intermediate Cluster Routing</span>
             </div>
-            <span className="text-[11px] text-zinc-500">M = 8 connections</span>
+            <span className="text-[11px] text-[#70757a]">M = 8 connections</span>
           </div>
 
-          <div className="h-20 bg-zinc-950 rounded border border-zinc-850 flex items-center justify-around px-6 relative overflow-hidden">
+          <div className="h-20 bg-white rounded-xl border border-[#dadce0] flex items-center justify-around px-6 relative overflow-hidden">
             {[3, 7, 12, 19].map((nodeId) => (
               <React.Fragment key={nodeId}>
                 <div className={`h-8 w-8 rounded-full flex items-center justify-center font-mono text-xs font-semibold transition-colors ${
                   current.activeNodes.includes(nodeId)
-                    ? 'bg-zinc-100 text-zinc-950 font-bold'
-                    : 'bg-zinc-800 text-zinc-400'
+                    ? 'bg-[#1a73e8] text-white font-bold shadow-sm'
+                    : 'bg-[#f1f3f4] text-[#5f6368]'
                 }`}>
                   #{nodeId}
                 </div>
-                {nodeId !== 19 && <div className="h-px flex-1 mx-2 bg-zinc-800" />}
+                {nodeId !== 19 && <div className="h-0.5 flex-1 mx-2 bg-[#dadce0]" />}
               </React.Fragment>
             ))}
           </div>
         </div>
 
         {/* Layer 0 */}
-        <div className={`p-4 sm:p-5 rounded-lg border transition-colors ${
+        <div className={`p-5 rounded-2xl border transition-all ${
           current.activeLayer === 0
-            ? 'bg-zinc-900 border-zinc-600'
-            : 'bg-zinc-950/70 border-zinc-800 opacity-60'
+            ? 'bg-[#e8f0fe] border-[#1a73e8] shadow-sm'
+            : 'bg-white border-[#dadce0] opacity-60'
         }`}>
           <div className="flex items-center justify-between mb-3 font-mono">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white text-[#1a73e8] font-bold border border-[#1a73e8]">
                 LAYER 0 (BASE)
               </span>
-              <span className="text-xs font-semibold text-white">Dense Vector Graph (All 1M Documents)</span>
+              <span className="text-xs font-medium text-[#202124]">Dense Vector Graph (All 1M Documents)</span>
             </div>
-            <span className="text-[11px] text-zinc-500">M = 16 connections | Heuristic Diversity Algorithm 4</span>
+            <span className="text-[11px] text-[#70757a]">M = 16 connections | Heuristic Diversity Algorithm 4</span>
           </div>
 
-          <div className="h-20 bg-zinc-950 rounded border border-zinc-850 flex items-center justify-around px-4 relative overflow-hidden">
+          <div className="h-20 bg-white rounded-xl border border-[#dadce0] flex items-center justify-around px-4 relative overflow-hidden">
             {[19, 42, 88, 105, 342, 610].map((nodeId) => (
               <div
                 key={nodeId}
                 className={`h-8 w-8 rounded-full flex items-center justify-center font-mono text-xs font-semibold transition-colors ${
                   current.activeNodes.includes(nodeId)
-                    ? 'bg-zinc-100 text-zinc-950 font-bold'
-                    : 'bg-zinc-800 text-zinc-400'
+                    ? 'bg-[#1a73e8] text-white font-bold shadow-sm'
+                    : 'bg-[#f1f3f4] text-[#5f6368]'
                 }`}
               >
                 #{nodeId}
@@ -206,12 +206,12 @@ export const HnswVisualizer: React.FC = () => {
       </div>
 
       {/* Traversal State Footnote */}
-      <div className="p-4 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-between text-xs font-mono">
-        <div className="flex items-center gap-2 text-zinc-300">
-          <ChevronRight className="h-3.5 w-3.5 text-zinc-500" />
+      <div className="p-4 rounded-xl bg-[#f8f9fa] border border-[#dadce0] flex items-center justify-between text-xs font-mono">
+        <div className="flex items-center gap-2 text-[#3c4043]">
+          <ChevronRight className="h-3.5 w-3.5 text-[#1a73e8]" />
           <span>CURRENT ACTION: {current.action}</span>
         </div>
-        <span className="text-zinc-500 hidden sm:block">Total Graph Nodes: 1,000,000 | Traversal Time: 0.28ms</span>
+        <span className="text-[#70757a] hidden sm:block">1,000,000 Graph Nodes · Traversal: 0.28ms</span>
       </div>
     </div>
   );

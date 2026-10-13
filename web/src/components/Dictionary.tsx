@@ -1,13 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { Search, BookOpen, ChevronRight, Hash, Code2, Calculator, ArrowUpRight, Filter, BookMarked, Sparkles } from 'lucide-react';
-import { DICTIONARY_TERMS, CATEGORIES, DictionaryTerm } from '../dictionaryData';
+import { Search, BookOpen, ChevronRight, Hash, Code2, Calculator, BookMarked, ExternalLink } from 'lucide-react';
+import { DICTIONARY_TERMS, CATEGORIES } from '../dictionaryData';
 
 export const Dictionary: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedTermId, setSelectedTermId] = useState<string>(DICTIONARY_TERMS[0].id);
 
-  // Filter terms based on search and category
   const filteredTerms = useMemo(() => {
     return DICTIONARY_TERMS.filter((term) => {
       const matchesCategory = selectedCategory === 'all' || term.category === selectedCategory;
@@ -32,45 +31,45 @@ export const Dictionary: React.FC = () => {
   }, [selectedTermId, filteredTerms]);
 
   return (
-    <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 font-sans bg-white text-[#202124]">
       {/* Header */}
-      <div className="mb-8 border-b border-zinc-800 pb-6">
+      <div className="mb-6 border-b border-[#dadce0] pb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs font-mono mb-2">
-              <BookOpen className="h-3.5 w-3.5 text-zinc-400" />
-              Technical Systems Glossary
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#e8f0fe] text-[#1a73e8] text-xs font-medium mb-2">
+              <BookOpen className="h-3.5 w-3.5" />
+              Information Retrieval Glossary
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-              TitanIR Engine Dictionary
+            <h1 className="text-2xl sm:text-3xl font-normal text-[#202124] tracking-tight">
+              TitanIR Technical Dictionary
             </h1>
-            <p className="mt-1 text-sm text-zinc-400 max-w-2xl">
-              Rigorously defined concepts, mathematical formulations, concrete calculation walkthroughs, and Rust implementation references for every core retrieval component.
+            <p className="mt-1 text-sm text-[#5f6368] max-w-2xl leading-relaxed">
+              Formal definitions, engineering mechanisms, LaTeX equations, real-world numerical calculation walkthroughs, and native Rust implementation links.
             </p>
           </div>
 
-          <div className="text-xs text-zinc-500 font-mono text-left sm:text-right">
-            <div>Total Indexed Concepts: <span className="text-zinc-200 font-semibold">{DICTIONARY_TERMS.length}</span></div>
-            <div>Source: <span className="text-zinc-400">TitanIR Systems Blueprint</span></div>
+          <div className="text-xs text-[#70757a] font-mono text-left sm:text-right">
+            <div>Indexed Concepts: <span className="text-[#202124] font-semibold">{DICTIONARY_TERMS.length}</span></div>
+            <div>Corpus: <span className="text-[#5f6368]">MS MARCO Benchmark</span></div>
           </div>
         </div>
 
         {/* Search & Category Filter Bar */}
-        <div className="mt-6 flex flex-col md:flex-row gap-3">
+        <div className="mt-5 flex flex-col md:flex-row gap-3">
           {/* Search Input */}
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#70757a] pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search terms, equations, files, or algorithms (e.g. Elias-Fano, BM25, AVX2)..."
-              className="w-full pl-9 pr-4 py-2 bg-zinc-900 border border-zinc-800 rounded-md text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-600 font-sans"
+              placeholder="Search concepts, equations, files, or algorithms (e.g. Elias-Fano, BM25, AVX2)..."
+              className="w-full pl-10 pr-4 py-2.5 rounded-full border border-[#dfe1e5] hover:border-[#dfe1e5] focus:outline-none focus:border-transparent google-search-shadow text-sm text-[#202124]"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-500 hover:text-zinc-300"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-[#70757a] hover:text-[#202124]"
               >
                 Clear
               </button>
@@ -83,10 +82,10 @@ export const Dictionary: React.FC = () => {
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors ${
+                className={`px-3 py-1.5 rounded-full text-xs font-normal whitespace-nowrap transition-colors ${
                   selectedCategory === cat.id
-                    ? 'bg-zinc-200 text-zinc-950 font-semibold'
-                    : 'bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850'
+                    ? 'bg-[#1a73e8] text-white font-medium'
+                    : 'bg-[#f8f9fa] border border-[#dadce0] text-[#3c4043] hover:bg-[#f1f3f4]'
                 }`}
               >
                 {cat.label}
@@ -96,20 +95,20 @@ export const Dictionary: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Split Layout: Term Index + Term Detail */}
+      {/* Main Split Layout: Term Index (Left 4 cols) + Detail Specification (Right 8 cols) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column: Term Selector List (4 cols) */}
+        {/* Left Column: Term Selector List */}
         <div className="lg:col-span-4 flex flex-col gap-2 max-h-[750px] overflow-y-auto pr-1">
-          <div className="text-xs font-mono uppercase tracking-wider text-zinc-500 mb-1 px-1">
+          <div className="text-xs font-mono uppercase tracking-wider text-[#70757a] mb-1 px-1">
             Showing {filteredTerms.length} of {DICTIONARY_TERMS.length} Terms
           </div>
 
           {filteredTerms.length === 0 ? (
-            <div className="p-6 text-center border border-zinc-800 bg-zinc-900/40 rounded-lg text-zinc-400 text-sm">
+            <div className="p-6 text-center border border-[#dadce0] bg-[#f8f9fa] rounded-xl text-[#70757a] text-sm">
               No technical terms match &quot;{searchQuery}&quot;.
               <button
                 onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }}
-                className="mt-3 block mx-auto text-xs text-zinc-300 underline"
+                className="mt-3 block mx-auto text-xs text-[#1a73e8] underline"
               >
                 Reset filters
               </button>
@@ -121,29 +120,29 @@ export const Dictionary: React.FC = () => {
                 <button
                   key={term.id}
                   onClick={() => setSelectedTermId(term.id)}
-                  className={`text-left p-3.5 rounded-lg border transition-all ${
+                  className={`text-left p-3.5 rounded-xl border transition-all ${
                     isSelected
-                      ? 'bg-zinc-900 border-zinc-600 shadow-sm'
-                      : 'bg-zinc-900/40 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900/70'
+                      ? 'bg-[#e8f0fe] border-[#1a73e8] shadow-sm'
+                      : 'bg-white border-[#dadce0] hover:bg-[#f8f9fa] hover:border-[#bdc1c6]'
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className={`text-sm font-semibold tracking-tight ${isSelected ? 'text-white' : 'text-zinc-200'}`}>
+                    <span className={`text-sm font-medium tracking-tight ${isSelected ? 'text-[#1a73e8]' : 'text-[#202124]'}`}>
                       {term.term}
                     </span>
                     {term.acronym && (
-                      <span className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
+                      <span className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-[#f1f3f4] text-[#5f6368] border border-[#dadce0]">
                         {term.acronym}
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-[#5f6368] line-clamp-2 leading-relaxed">
                     {term.oneLiner}
                   </p>
-                  <div className="mt-2.5 flex items-center justify-between text-[11px] font-mono text-zinc-500">
+                  <div className="mt-2 flex items-center justify-between text-[11px] font-mono text-[#70757a]">
                     <span className="capitalize">{term.category}</span>
-                    <span className="text-zinc-400 flex items-center gap-0.5">
-                      View details <ChevronRight className="h-3 w-3" />
+                    <span className="text-[#1a73e8] flex items-center gap-0.5">
+                      Inspect <ChevronRight className="h-3 w-3" />
                     </span>
                   </div>
                 </button>
@@ -152,52 +151,52 @@ export const Dictionary: React.FC = () => {
           )}
         </div>
 
-        {/* Right Column: In-Depth Term Specification (8 cols) */}
+        {/* Right Column: In-Depth Term Specification */}
         <div className="lg:col-span-8">
           {activeTerm ? (
-            <div className="border border-zinc-800 bg-zinc-900/70 rounded-xl p-6 sm:p-8 space-y-6">
+            <div className="border border-[#dadce0] bg-white rounded-2xl p-6 sm:p-8 space-y-6 google-card-shadow">
               {/* Header Badge & Title */}
-              <div className="border-b border-zinc-800 pb-5">
+              <div className="border-b border-[#dadce0] pb-4">
                 <div className="flex flex-wrap items-center gap-2 mb-2">
-                  <span className="text-xs font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
+                  <span className="text-xs font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-[#f1f3f4] text-[#3c4043] border border-[#dadce0]">
                     {activeTerm.category}
                   </span>
                   {activeTerm.acronym && (
-                    <span className="text-xs font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
+                    <span className="text-xs font-mono px-2 py-0.5 rounded bg-[#f1f3f4] text-[#3c4043] border border-[#dadce0]">
                       Acronym: {activeTerm.acronym}
                     </span>
                   )}
-                  <span className="text-xs text-zinc-500 font-mono ml-auto">
+                  <span className="text-xs text-[#70757a] font-mono ml-auto">
                     ID: #{activeTerm.id}
                   </span>
                 </div>
 
-                <h2 className="text-2xl font-bold text-white tracking-tight">
+                <h2 className="text-2xl font-normal text-[#202124] tracking-tight">
                   {activeTerm.term}
                 </h2>
-                <p className="mt-1.5 text-base text-zinc-300 font-normal leading-relaxed">
+                <p className="mt-1 text-base text-[#5f6368] leading-relaxed">
                   {activeTerm.oneLiner}
                 </p>
               </div>
 
               {/* Rigorous Definition */}
               <div>
-                <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-2 flex items-center gap-1.5">
-                  <BookMarked className="h-3.5 w-3.5 text-zinc-400" />
-                  Technical Definition & Specification
+                <h3 className="text-xs font-mono uppercase tracking-wider text-[#70757a] mb-2 flex items-center gap-1.5">
+                  <BookMarked className="h-3.5 w-3.5 text-[#1a73e8]" />
+                  Formal Definition & Specification
                 </h3>
-                <p className="text-sm text-zinc-300 leading-relaxed bg-zinc-950/70 border border-zinc-800/80 p-4 rounded-lg">
+                <p className="text-sm text-[#3c4043] leading-relaxed bg-[#f8f9fa] border border-[#dadce0] p-4 rounded-xl">
                   {activeTerm.definition}
                 </p>
               </div>
 
               {/* Working Mechanism */}
               <div>
-                <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-2 flex items-center gap-1.5">
-                  <Hash className="h-3.5 w-3.5 text-zinc-400" />
+                <h3 className="text-xs font-mono uppercase tracking-wider text-[#70757a] mb-2 flex items-center gap-1.5">
+                  <Hash className="h-3.5 w-3.5 text-[#1a73e8]" />
                   Engineering Mechanism
                 </h3>
-                <p className="text-sm text-zinc-300 leading-relaxed bg-zinc-950/70 border border-zinc-800/80 p-4 rounded-lg font-sans">
+                <p className="text-sm text-[#3c4043] leading-relaxed bg-[#f8f9fa] border border-[#dadce0] p-4 rounded-xl">
                   {activeTerm.mechanism}
                 </p>
               </div>
@@ -205,16 +204,16 @@ export const Dictionary: React.FC = () => {
               {/* Mathematical Formulation (if present) */}
               {activeTerm.mathFormula && (
                 <div>
-                  <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-2 flex items-center gap-1.5">
-                    <Calculator className="h-3.5 w-3.5 text-zinc-400" />
+                  <h3 className="text-xs font-mono uppercase tracking-wider text-[#70757a] mb-2 flex items-center gap-1.5">
+                    <Calculator className="h-3.5 w-3.5 text-[#1a73e8]" />
                     Mathematical Formulation
                   </h3>
-                  <div className="bg-zinc-950 border border-zinc-800 p-4 rounded-lg space-y-2.5">
-                    <div className="font-mono text-sm sm:text-base text-zinc-100 overflow-x-auto py-1">
+                  <div className="bg-[#f8f9fa] border border-[#dadce0] p-4 rounded-xl space-y-2">
+                    <div className="font-mono text-sm sm:text-base text-[#202124] overflow-x-auto py-1">
                       {activeTerm.mathFormula}
                     </div>
                     {activeTerm.mathExplanation && (
-                      <p className="text-xs text-zinc-400 leading-relaxed border-t border-zinc-850 pt-2 font-sans">
+                      <p className="text-xs text-[#5f6368] leading-relaxed border-t border-[#dadce0] pt-2">
                         {activeTerm.mathExplanation}
                       </p>
                     )}
@@ -224,45 +223,45 @@ export const Dictionary: React.FC = () => {
 
               {/* Concrete Real-World Example Box */}
               <div>
-                <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-2 flex items-center gap-1.5">
-                  <Code2 className="h-3.5 w-3.5 text-zinc-400" />
-                  Concrete Calculation & Real-World Example
+                <h3 className="text-xs font-mono uppercase tracking-wider text-[#70757a] mb-2 flex items-center gap-1.5">
+                  <Code2 className="h-3.5 w-3.5 text-[#1a73e8]" />
+                  Concrete Numerical Example Walkthrough
                 </h3>
-                <div className="bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden">
-                  <div className="px-4 py-2.5 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between">
-                    <span className="text-xs font-semibold text-zinc-200">
+                <div className="bg-white border border-[#dadce0] rounded-xl overflow-hidden">
+                  <div className="px-4 py-2.5 bg-[#f8f9fa] border-b border-[#dadce0] flex items-center justify-between">
+                    <span className="text-xs font-medium text-[#202124]">
                       {activeTerm.example.title}
                     </span>
-                    <span className="text-[11px] font-mono text-zinc-500">Walkthrough</span>
+                    <span className="text-[11px] font-mono text-[#70757a]">Walkthrough</span>
                   </div>
 
                   <div className="p-4 space-y-3">
-                    <p className="text-xs text-zinc-400 leading-relaxed">
+                    <p className="text-xs text-[#5f6368] leading-relaxed">
                       {activeTerm.example.description}
                     </p>
 
-                    <div className="bg-zinc-900/80 border border-zinc-800/80 p-2.5 rounded font-mono text-xs text-zinc-300">
-                      <span className="text-zinc-500 select-none">INPUT: </span>
+                    <div className="bg-[#f8f9fa] border border-[#dadce0] p-2.5 rounded-lg font-mono text-xs text-[#202124]">
+                      <span className="text-[#70757a] select-none">INPUT: </span>
                       {activeTerm.example.input}
                     </div>
 
                     <div className="space-y-1.5 my-2">
-                      <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500">
+                      <div className="text-[11px] font-mono uppercase tracking-wider text-[#70757a]">
                         Step-by-Step Execution:
                       </div>
                       {activeTerm.example.walkthrough.map((step, idx) => (
                         <div
                           key={idx}
-                          className="flex items-start gap-2.5 text-xs text-zinc-300 font-mono bg-zinc-900/30 px-2.5 py-1.5 rounded border border-zinc-850"
+                          className="flex items-start gap-2.5 text-xs text-[#3c4043] font-mono bg-[#f8f9fa] px-2.5 py-1.5 rounded border border-[#e8eaed]"
                         >
-                          <span className="text-zinc-500 select-none">{idx + 1}.</span>
+                          <span className="text-[#70757a] select-none">{idx + 1}.</span>
                           <span className="leading-relaxed">{step}</span>
                         </div>
                       ))}
                     </div>
 
-                    <div className="bg-zinc-900/90 border border-zinc-700/80 p-2.5 rounded font-mono text-xs text-zinc-100">
-                      <span className="text-zinc-400 font-bold select-none">RESULT: </span>
+                    <div className="bg-[#e6f4ea] border border-[#ceead6] p-2.5 rounded-lg font-mono text-xs text-[#137333]">
+                      <span className="font-bold select-none">RESULT: </span>
                       {activeTerm.example.output}
                     </div>
                   </div>
@@ -270,20 +269,20 @@ export const Dictionary: React.FC = () => {
               </div>
 
               {/* TitanIR Native Implementation Blueprint */}
-              <div className="pt-2 border-t border-zinc-800">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-zinc-950 border border-zinc-800 rounded-lg">
+              <div className="pt-2 border-t border-[#dadce0]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-[#f8f9fa] border border-[#dadce0] rounded-xl">
                   <div>
-                    <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 mb-1">
+                    <div className="text-[11px] font-mono uppercase tracking-wider text-[#70757a] mb-0.5">
                       TitanIR Native Rust Implementation
                     </div>
-                    <div className="font-mono text-xs text-zinc-200 font-medium">
+                    <div className="font-mono text-xs text-[#202124] font-medium">
                       {activeTerm.titanIrImplementation.crate}/{activeTerm.titanIrImplementation.file}
                     </div>
-                    <p className="text-xs text-zinc-400 mt-1">
+                    <p className="text-xs text-[#5f6368] mt-0.5">
                       {activeTerm.titanIrImplementation.role}
                     </p>
                   </div>
-                  <span className="text-xs font-mono px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 whitespace-nowrap self-start sm:self-center">
+                  <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-white border border-[#dadce0] text-[#3c4043] whitespace-nowrap self-start sm:self-center">
                     Rust 2021
                   </span>
                 </div>
@@ -292,7 +291,7 @@ export const Dictionary: React.FC = () => {
               {/* Related Terms Cross-Linking */}
               {activeTerm.relatedTerms && activeTerm.relatedTerms.length > 0 && (
                 <div className="pt-2">
-                  <span className="text-xs font-mono uppercase tracking-wider text-zinc-500 mr-2">
+                  <span className="text-xs font-mono uppercase tracking-wider text-[#70757a] mr-2">
                     Related Concepts:
                   </span>
                   <div className="inline-flex flex-wrap gap-1.5 mt-1 sm:mt-0">
@@ -303,7 +302,7 @@ export const Dictionary: React.FC = () => {
                         <button
                           key={relId}
                           onClick={() => setSelectedTermId(relId)}
-                          className="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-300 hover:text-white hover:border-zinc-600 transition-colors"
+                          className="px-2.5 py-1 rounded-full bg-[#f8f9fa] border border-[#dadce0] text-xs font-mono text-[#3c4043] hover:bg-[#e8f0fe] hover:text-[#1a73e8] hover:border-[#1a73e8] transition-colors"
                         >
                           {related.term}
                         </button>
@@ -314,8 +313,8 @@ export const Dictionary: React.FC = () => {
               )}
             </div>
           ) : (
-            <div className="p-8 border border-zinc-800 bg-zinc-900/40 rounded-xl text-center text-zinc-400">
-              Select a term to view definition and examples.
+            <div className="p-8 border border-[#dadce0] bg-[#f8f9fa] rounded-2xl text-center text-[#70757a]">
+              Select a term to view specification and examples.
             </div>
           )}
         </div>

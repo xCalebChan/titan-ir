@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
-import { Hero } from './components/Hero';
 import { SearchConsole } from './components/SearchConsole';
+import { About } from './components/About';
 import { Dictionary } from './components/Dictionary';
 import { PipelineFlow } from './components/PipelineFlow';
 import { WandSimulator } from './components/WandSimulator';
@@ -13,6 +13,7 @@ import { EvaluationDashboard } from './components/EvaluationDashboard';
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('search');
   const [isBackendConnected, setIsBackendConnected] = useState<boolean>(false);
+  const [activeQuery, setActiveQuery] = useState<string>('');
 
   // Poll backend health status
   useEffect(() => {
@@ -24,7 +25,7 @@ export const App: React.FC = () => {
           return;
         }
       } catch {
-        // server offline
+        // backend offline
       }
       setIsBackendConnected(false);
     };
@@ -34,31 +35,38 @@ export const App: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const handleSearchFromHeader = (q: string) => {
+    setActiveQuery(q);
+    setActiveTab('search');
+  };
+
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans">
-      {/* Navigation */}
+    <div className="min-h-screen bg-white text-[#202124] flex flex-col font-sans">
+      {/* Minimal Google-style Top Bar */}
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         isBackendConnected={isBackendConnected}
+        onSearchQuery={handleSearchFromHeader}
+        currentQuery={activeQuery}
+        inSearchMode={activeTab === 'search' && Boolean(activeQuery)}
       />
 
-      {/* Main Content */}
+      {/* Main Content Area */}
       <main className="flex-1">
         {activeTab === 'search' && (
-          <>
-            <Hero
-              onExploreSearch={() => {
-                const el = document.getElementById('search-section');
-                el?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              onExploreArchitecture={() => setActiveTab('pipeline')}
-              onExploreDictionary={() => setActiveTab('dictionary')}
-            />
-            <div id="search-section">
-              <SearchConsole isBackendConnected={isBackendConnected} />
-            </div>
-          </>
+          <SearchConsole
+            isBackendConnected={isBackendConnected}
+            onNavigateTab={setActiveTab}
+            externalQuery={activeQuery}
+          />
+        )}
+
+        {activeTab === 'about' && (
+          <About
+            onGoToSearch={() => setActiveTab('search')}
+            onGoToDictionary={() => setActiveTab('dictionary')}
+          />
         )}
 
         {activeTab === 'dictionary' && <Dictionary />}
@@ -70,19 +78,41 @@ export const App: React.FC = () => {
         {activeTab === 'eval' && <EvaluationDashboard />}
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-zinc-800 bg-zinc-950 py-6 px-4 sm:px-6 lg:px-8 mt-12">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500 font-mono">
+      {/* Google-style Minimal Footer */}
+      <footer className="bg-[#f2f2f2] border-t border-[#dadce0] text-xs text-[#70757a] font-sans">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 border-b border-[#dadce0] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-white text-xs">Titan<span className="text-zinc-400">IR</span></span>
-            <span>— High-Throughput Hybrid Retrieval Engine</span>
+            <span className="font-medium text-[#3c4043]">TitanIR</span>
+            <span>· High-Throughput Hybrid Retrieval Engine</span>
+          </div>
+          <div className="hidden sm:block text-[11px] text-[#70757a] font-mono">
+            Rust 2021 · SIMD Elias-Fano · SQ8 HNSW · ONNX Runtime
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-6">
+            <button onClick={() => setActiveTab('about')} className="hover:text-[#202124]">
+              About TitanIR
+            </button>
+            <button onClick={() => setActiveTab('dictionary')} className="hover:text-[#202124]">
+              Dictionary
+            </button>
+            <button onClick={() => setActiveTab('pipeline')} className="hover:text-[#202124]">
+              How Search Works
+            </button>
           </div>
 
-          <div className="flex items-center gap-4 text-[11px] text-zinc-400">
-            <span>Rust 2021</span>
-            <span>ONNX Runtime</span>
-            <span>AVX2 SIMD</span>
-            <span>MS MARCO Validated</span>
+          <div className="flex items-center gap-6">
+            <span className="text-[#70757a]">Mozilla Engineer Research Project</span>
+            <a
+              href="https://github.com/xCalebChan/titan-ir"
+              target="_blank"
+              rel="noreferrer"
+              className="text-[#1a73e8] hover:underline"
+            >
+              GitHub Source
+            </a>
           </div>
         </div>
       </footer>

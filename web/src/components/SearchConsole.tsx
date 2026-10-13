@@ -1,27 +1,42 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Zap, GitBranch, Cpu, Sliders, Clock, ExternalLink, ShieldCheck, Filter, Terminal } from 'lucide-react';
+import { Search, X, Sliders, ExternalLink, Sparkles, Zap, GitBranch, Cpu, BookOpen, Layers, Info, CheckCircle2, ArrowRight } from 'lucide-react';
 import { SearchResponse, SearchHit } from '../types';
 import { QUERY_SUGGESTIONS, simulateLocalSearch } from '../sampleData';
 
 interface SearchConsoleProps {
   isBackendConnected: boolean;
+  onNavigateTab?: (tab: string) => void;
+  externalQuery?: string;
 }
 
-export const SearchConsole: React.FC<SearchConsoleProps> = ({ isBackendConnected }) => {
-  const [query, setQuery] = useState('Block-Max WAND dynamic pruning inverted index');
+export const SearchConsole: React.FC<SearchConsoleProps> = ({
+  isBackendConnected,
+  onNavigateTab,
+  externalQuery,
+}) => {
+  const [query, setQuery] = useState(externalQuery || '');
+  const [hasSearched, setHasSearched] = useState(Boolean(externalQuery));
   const [mode, setMode] = useState<'hybrid' | 'lexical' | 'dense'>('hybrid');
   const [topK, setTopK] = useState(10);
   const [rrfK, setRrfK] = useState(60);
   const [rerank, setRerank] = useState(true);
   const [rerankCandidates, setRerankCandidates] = useState(50);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showTools, setShowTools] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<SearchResponse | null>(null);
 
+  useEffect(() => {
+    if (externalQuery && externalQuery !== query) {
+      setQuery(externalQuery);
+      executeSearch(externalQuery, mode);
+    }
+  }, [externalQuery]);
+
   const executeSearch = async (targetQuery = query, targetMode = mode) => {
     if (!targetQuery.trim()) return;
     setLoading(true);
+    setHasSearched(true);
 
     if (isBackendConnected) {
       try {
@@ -53,321 +68,446 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({ isBackendConnected
       const localData = simulateLocalSearch(targetQuery, targetMode, topK, rrfK, rerank);
       setResponse(localData);
       setLoading(false);
-    }, 35);
+    }, 40);
   };
 
-  useEffect(() => {
-    executeSearch();
-  }, [mode]);
-
-  const handleSuggestionClick = (preset: string) => {
+  const handlePresetClick = (preset: string) => {
     setQuery(preset);
     executeSearch(preset, mode);
   };
 
-  return (
-    <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div>
-          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 text-xs font-mono mb-2">
-            <Terminal className="h-3.5 w-3.5 text-zinc-400" />
-            Query Serving Path
+  const handleFeelingLucky = () => {
+    const randomQuery = QUERY_SUGGESTIONS[Math.floor(Math.random() * QUERY_SUGGESTIONS.length)];
+    setQuery(randomQuery);
+    executeSearch(randomQuery, mode);
+  };
+
+  // 1. GOOGLE HOME VIEW (Initial State before searching)
+  if (!hasSearched) {
+    return (
+      <div className="min-h-[calc(100vh-4rem)] flex flex-col justify-between py-12 px-4 sm:px-6 lg:px-8 font-sans bg-white">
+        <div className="max-w-2xl mx-auto w-full text-center my-auto">
+          {/* Google Logo */}
+          <div className="select-none mb-6">
+            <span className="text-6xl sm:text-7xl font-normal tracking-tight">
+              <span className="text-[#4285f4]">T</span>
+              <span className="text-[#ea4335]">i</span>
+              <span className="text-[#fbbc05]">t</span>
+              <span className="text-[#4285f4]">a</span>
+              <span className="text-[#34a853]">n</span>
+              <span className="text-[#ea4335] ml-1 font-medium">IR</span>
+            </span>
+            <div className="mt-1 text-xs font-mono uppercase tracking-wider text-[#70757a]">
+              Dual-Engine Hybrid Retrieval · MS MARCO 8.8M Dataset
+            </div>
           </div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">
-            Hybrid Retrieval Console
-          </h2>
-          <p className="text-sm text-zinc-400 max-w-2xl mt-0.5">
-            Execute sub-millisecond queries combining SIMD Elias-Fano Bitsets, SQ8 Quantized HNSW, and Cross-Encoder L2 reranking.
-          </p>
+
+          {/* Google Search Box */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              executeSearch();
+            }}
+            className="w-full relative mb-6"
+          >
+            <div className="relative flex items-center w-full rounded-full border border-[#dfe1e5] hover:border-transparent hover:google-search-shadow focus-within:google-search-shadow focus-within:border-transparent transition-all bg-white px-4 py-3">
+              <Search className="h-5 w-5 text-[#9aa0a6] mr-3 shrink-0" />
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search 8.8M passages or technical concepts..."
+                className="w-full text-base text-[#202124] focus:outline-none placeholder-[#80868b]"
+                autoFocus
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => setQuery('')}
+                  className="p-1 text-[#70757a] hover:text-[#202124] mr-2"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+
+            {/* Google Search Buttons */}
+            <div className="mt-6 flex items-center justify-center gap-3">
+              <button
+                type="submit"
+                className="px-4 py-2 bg-[#f8f9fa] hover:bg-[#f1f3f4] border border-[#f8f9fa] hover:border-[#dadce0] rounded text-sm text-[#3c4043] font-normal transition-colors"
+              >
+                Titan Search
+              </button>
+              <button
+                type="button"
+                onClick={handleFeelingLucky}
+                className="px-4 py-2 bg-[#f8f9fa] hover:bg-[#f1f3f4] border border-[#f8f9fa] hover:border-[#dadce0] rounded text-sm text-[#3c4043] font-normal transition-colors"
+              >
+                I&apos;m Feeling Lucky
+              </button>
+            </div>
+          </form>
+
+          {/* Quick Presets */}
+          <div className="mt-4 text-xs text-[#70757a]">
+            <span>Try searching: </span>
+            <div className="inline-flex flex-wrap justify-center gap-2 mt-2">
+              {QUERY_SUGGESTIONS.slice(0, 4).map((preset, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handlePresetClick(preset)}
+                  className="text-[#1a0dab] hover:underline"
+                >
+                  {preset}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* Mode Selector - Flat segmented control */}
-        <div className="flex items-center gap-1 p-1 bg-zinc-900 border border-zinc-800 rounded-md self-start sm:self-auto">
-          <button
-            onClick={() => setMode('hybrid')}
-            className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
-              mode === 'hybrid'
-                ? 'bg-zinc-200 text-zinc-950 font-semibold'
-                : 'text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            Hybrid (RRF + L2)
-          </button>
-          <button
-            onClick={() => setMode('lexical')}
-            className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
-              mode === 'lexical'
-                ? 'bg-zinc-200 text-zinc-950 font-semibold'
-                : 'text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            Lexical (WAND BM25)
-          </button>
-          <button
-            onClick={() => setMode('dense')}
-            className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
-              mode === 'dense'
-                ? 'bg-zinc-200 text-zinc-950 font-semibold'
-                : 'text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            Dense (SQ8 HNSW)
-          </button>
+        {/* Google Home Footer */}
+        <div className="max-w-4xl mx-auto w-full text-center text-xs text-[#70757a] border-t border-[#dadce0] pt-4 mt-8 space-y-1">
+          <div>Built by an engineer at Mozilla · Interested in modern hybrid search & information retrieval</div>
+          <div className="text-[11px] text-[#9aa0a6] font-mono">
+            Rust 2021 · SIMD Elias-Fano · SQ8 Quantized HNSW · ONNX Runtime Cross-Encoder
+          </div>
         </div>
       </div>
+    );
+  }
 
-      {/* Main Search Input */}
-      <div className="relative mb-3">
-        <div className="relative flex items-center">
-          <Search className="absolute left-3.5 h-4 w-4 text-zinc-500 pointer-events-none" />
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && executeSearch()}
-            placeholder="Type your technical query or select a preset below..."
-            className="w-full pl-10 pr-28 py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-white text-sm placeholder-zinc-500 focus:outline-none focus:border-zinc-600 transition-colors"
-          />
-          <div className="absolute right-2 flex items-center gap-1.5">
+  // 2. GOOGLE SEARCH RESULTS VIEW
+  return (
+    <div className="bg-white min-h-[calc(100vh-4rem)] font-sans">
+      {/* Google Sub-header / Tabs Bar */}
+      <div className="border-b border-[#dadce0] bg-white sticky top-16 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Mobile search bar if on small screen */}
+          <div className="md:hidden py-2.5">
+            <div className="relative flex items-center w-full rounded-full border border-[#dfe1e5] px-3 py-2 text-sm">
+              <Search className="h-4 w-4 text-[#9aa0a6] mr-2" />
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && executeSearch()}
+                className="w-full text-sm text-[#202124] focus:outline-none"
+              />
+              <button
+                onClick={() => executeSearch()}
+                className="ml-2 text-xs font-medium text-[#1a73e8]"
+              >
+                Go
+              </button>
+            </div>
+          </div>
+
+          {/* Google Search Mode Tabs */}
+          <div className="flex items-center gap-6 overflow-x-auto text-sm text-[#5f6368] font-normal scrollbar-none">
             <button
-              onClick={() => setShowFilters(!showFilters)}
-              className={`p-1.5 rounded border text-xs flex items-center gap-1 transition-colors ${
-                showFilters
-                  ? 'bg-zinc-800 border-zinc-600 text-zinc-200'
-                  : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-zinc-200'
+              onClick={() => {
+                setMode('hybrid');
+                executeSearch(query, 'hybrid');
+              }}
+              className={`flex items-center gap-1.5 py-3 border-b-2 whitespace-nowrap transition-colors ${
+                mode === 'hybrid'
+                  ? 'border-[#1a73e8] text-[#1a73e8] font-medium'
+                  : 'border-transparent hover:text-[#202124]'
               }`}
-              title="Tuning Parameters"
+            >
+              <Search className="h-4 w-4" />
+              All (Hybrid)
+            </button>
+
+            <button
+              onClick={() => {
+                setMode('lexical');
+                executeSearch(query, 'lexical');
+              }}
+              className={`flex items-center gap-1.5 py-3 border-b-2 whitespace-nowrap transition-colors ${
+                mode === 'lexical'
+                  ? 'border-[#1a73e8] text-[#1a73e8] font-medium'
+                  : 'border-transparent hover:text-[#202124]'
+              }`}
+            >
+              <Zap className="h-4 w-4" />
+              Lexical (BM25)
+            </button>
+
+            <button
+              onClick={() => {
+                setMode('dense');
+                executeSearch(query, 'dense');
+              }}
+              className={`flex items-center gap-1.5 py-3 border-b-2 whitespace-nowrap transition-colors ${
+                mode === 'dense'
+                  ? 'border-[#1a73e8] text-[#1a73e8] font-medium'
+                  : 'border-transparent hover:text-[#202124]'
+              }`}
+            >
+              <GitBranch className="h-4 w-4" />
+              Dense (SQ8 HNSW)
+            </button>
+
+            {onNavigateTab && (
+              <>
+                <button
+                  onClick={() => onNavigateTab('dictionary')}
+                  className="flex items-center gap-1.5 py-3 border-b-2 border-transparent hover:text-[#202124] whitespace-nowrap"
+                >
+                  <BookOpen className="h-4 w-4" />
+                  Dictionary
+                </button>
+
+                <button
+                  onClick={() => onNavigateTab('pipeline')}
+                  className="flex items-center gap-1.5 py-3 border-b-2 border-transparent hover:text-[#202124] whitespace-nowrap"
+                >
+                  <Layers className="h-4 w-4" />
+                  Architecture
+                </button>
+
+                <button
+                  onClick={() => onNavigateTab('about')}
+                  className="flex items-center gap-1.5 py-3 border-b-2 border-transparent hover:text-[#202124] whitespace-nowrap"
+                >
+                  <Info className="h-4 w-4" />
+                  About
+                </button>
+              </>
+            )}
+
+            <button
+              onClick={() => setShowTools(!showTools)}
+              className={`flex items-center gap-1 py-3 border-b-2 border-transparent ml-auto text-xs whitespace-nowrap ${
+                showTools ? 'text-[#1a73e8]' : 'hover:text-[#202124]'
+              }`}
             >
               <Sliders className="h-3.5 w-3.5" />
-            </button>
-            <button
-              onClick={() => executeSearch()}
-              disabled={loading}
-              className="px-3.5 py-1.5 rounded bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-medium transition-colors"
-            >
-              {loading ? 'Running...' : 'Execute'}
+              Tools
             </button>
           </div>
         </div>
       </div>
 
-      {/* Query Preset Pills */}
-      <div className="flex flex-wrap items-center gap-1.5 mb-5">
-        <span className="text-xs font-mono text-zinc-500 flex items-center gap-1 mr-1">
-          <Filter className="h-3 w-3" /> Presets:
-        </span>
-        {QUERY_SUGGESTIONS.map((preset, idx) => (
-          <button
-            key={idx}
-            onClick={() => handleSuggestionClick(preset)}
-            className="text-xs px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700 transition-colors font-mono"
-          >
-            {preset}
-          </button>
-        ))}
-      </div>
-
-      {/* Expandable Parameter Tuning Drawer */}
-      {showFilters && (
-        <div className="mb-6 p-4 rounded-lg bg-zinc-900/90 border border-zinc-800 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          <div>
-            <label className="text-xs font-mono uppercase tracking-wider text-zinc-400 block mb-1">
-              Top-K Candidates ({topK})
-            </label>
-            <input
-              type="range"
-              min="5"
-              max="50"
-              value={topK}
-              onChange={(e) => setTopK(Number(e.target.value))}
-              className="w-full accent-zinc-300"
-            />
-          </div>
-
-          <div>
-            <label className="text-xs font-mono uppercase tracking-wider text-zinc-400 block mb-1">
-              RRF Constant k ({rrfK})
-            </label>
-            <input
-              type="range"
-              min="10"
-              max="100"
-              value={rrfK}
-              onChange={(e) => setRrfK(Number(e.target.value))}
-              className="w-full accent-zinc-300"
-            />
-          </div>
-
-          <div>
-            <label className="text-xs font-mono uppercase tracking-wider text-zinc-400 block mb-1">
-              L2 Rerank Pool ({rerankCandidates})
-            </label>
-            <input
-              type="range"
-              min="20"
-              max="100"
-              value={rerankCandidates}
-              onChange={(e) => setRerankCandidates(Number(e.target.value))}
-              className="w-full accent-zinc-300"
-            />
-          </div>
-
-          <div className="flex items-center justify-between sm:justify-start sm:gap-3 pt-2 sm:pt-4">
-            <label className="text-xs font-mono uppercase tracking-wider text-zinc-400">
-              L2 Cross-Encoder:
-            </label>
-            <button
-              onClick={() => setRerank(!rerank)}
-              className={`px-2.5 py-1 rounded text-xs font-mono font-medium transition-colors ${
-                rerank
-                  ? 'bg-zinc-200 text-zinc-950'
-                  : 'bg-zinc-800 text-zinc-400'
-              }`}
-            >
-              {rerank ? 'ENABLED' : 'DISABLED'}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Performance & Execution Telemetry Bar */}
-      {response && (
-        <div className="mb-6 p-3.5 rounded-lg bg-zinc-900 border border-zinc-800">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5 text-center font-mono">
-            <div className="p-2 rounded bg-zinc-950 border border-zinc-850">
-              <div className="text-[10px] uppercase text-zinc-500">Total Latency</div>
-              <div className="text-base font-bold text-zinc-100 tabular-nums">
-                {response.timing.total_ms} ms
-              </div>
+      {/* Expandable Tools Strip (Top-K, Rerank tuning) */}
+      {showTools && (
+        <div className="border-b border-[#dadce0] bg-[#f8f9fa] py-3 text-xs text-[#3c4043]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap items-center gap-6 font-mono">
+            <div className="flex items-center gap-2">
+              <span className="text-[#70757a]">Top-K:</span>
+              <select
+                value={topK}
+                onChange={(e) => {
+                  setTopK(Number(e.target.value));
+                  executeSearch();
+                }}
+                className="bg-white border border-[#dadce0] rounded px-2 py-0.5"
+              >
+                <option value={5}>Top 5</option>
+                <option value={10}>Top 10</option>
+                <option value={20}>Top 20</option>
+              </select>
             </div>
 
-            <div className="p-2 rounded bg-zinc-950 border border-zinc-850">
-              <div className="text-[10px] uppercase text-zinc-500">Lexical WAND</div>
-              <div className="text-sm font-semibold text-zinc-300 tabular-nums">
-                {response.timing.lexical_ms} ms
-              </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[#70757a]">L2 Cross-Encoder:</span>
+              <button
+                onClick={() => {
+                  setRerank(!rerank);
+                  executeSearch();
+                }}
+                className={`px-2 py-0.5 rounded ${
+                  rerank ? 'bg-[#1a73e8] text-white' : 'bg-white border border-[#dadce0]'
+                }`}
+              >
+                {rerank ? 'Enabled' : 'Disabled'}
+              </button>
             </div>
 
-            <div className="p-2 rounded bg-zinc-950 border border-zinc-850">
-              <div className="text-[10px] uppercase text-zinc-500">Dense HNSW</div>
-              <div className="text-sm font-semibold text-zinc-300 tabular-nums">
-                {response.timing.dense_ms} ms
-              </div>
-            </div>
-
-            <div className="p-2 rounded bg-zinc-950 border border-zinc-850">
-              <div className="text-[10px] uppercase text-zinc-500">L2 Reranking</div>
-              <div className="text-sm font-semibold text-zinc-300 tabular-nums">
-                {response.timing.rerank_ms} ms
-              </div>
-            </div>
-
-            <div className="p-2 rounded bg-zinc-950 border border-zinc-850">
-              <div className="text-[10px] uppercase text-zinc-500">Blocks Skipped</div>
-              <div className="text-sm font-semibold text-zinc-300 tabular-nums">
-                {response.metrics.blocks_skipped} / {response.metrics.blocks_skipped + response.metrics.blocks_evaluated}
-              </div>
-            </div>
-
-            <div className="p-2 rounded bg-zinc-950 border border-zinc-850">
-              <div className="text-[10px] uppercase text-zinc-500">Pruning Ratio</div>
-              <div className="text-sm font-semibold text-zinc-200 tabular-nums">
-                {response.metrics.pruning_ratio_pct.toFixed(1)}%
-              </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[#70757a]">RRF k:</span>
+              <span>{rrfK}</span>
             </div>
           </div>
         </div>
       )}
 
-      {/* Results List */}
-      {response && response.results.length > 0 && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between text-xs text-zinc-500 px-1 font-mono">
-            <span>SHOWING TOP {response.results.length} RANKED PASSAGES</span>
-            <span>MODE: {response.mode.toUpperCase()}</span>
+      {/* Main Content Area */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        {/* Telemetry line: "About X results (0.38 milliseconds)" */}
+        {response && (
+          <div className="text-xs text-[#70757a] mb-5">
+            About {response.results.length} results ({response.timing.total_ms} milliseconds)
+          </div>
+        )}
+
+        {/* Google 2-Column Layout: Results on Left, Knowledge Panel on Right */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Left Column: Search Results (8 cols) */}
+          <div className="lg:col-span-8 space-y-7">
+            {loading ? (
+              <div className="py-12 text-sm text-[#70757a]">
+                Retrieving and reranking candidates across lexical and vector indexes...
+              </div>
+            ) : response && response.results.length > 0 ? (
+              response.results.map((hit, idx) => (
+                <div key={hit.doc_id} className="max-w-2xl font-sans">
+                  {/* Google Breadcrumb / URL */}
+                  <div className="flex items-center gap-2 text-xs text-[#202124] mb-1">
+                    <span className="text-[#70757a] truncate">https://titanir.engine › doc › #{hit.doc_id}</span>
+                  </div>
+
+                  {/* Google Blue Link Title */}
+                  <h3 className="text-xl font-normal text-[#1a0dab] hover:underline cursor-pointer leading-snug">
+                    {hit.title}
+                  </h3>
+
+                  {/* Google Snippet Body */}
+                  <p className="mt-1 text-sm text-[#4d5156] leading-relaxed">
+                    {hit.snippet}
+                  </p>
+
+                  {/* Technical Meta Line */}
+                  <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] font-mono text-[#70757a]">
+                    <span className="font-semibold text-[#137333]">Score: {hit.final_score.toFixed(4)}</span>
+                    {hit.lexical_score !== undefined && (
+                      <span>BM25: {hit.lexical_score.toFixed(2)}</span>
+                    )}
+                    {hit.dense_score !== undefined && (
+                      <span>Dense: {hit.dense_score.toFixed(3)}</span>
+                    )}
+                    {hit.rrf_score !== undefined && (
+                      <span>RRF: {hit.rrf_score.toFixed(4)}</span>
+                    )}
+                    {hit.rerank_score !== undefined && (
+                      <span className="text-[#1a73e8] font-medium">L2: {hit.rerank_score.toFixed(4)}</span>
+                    )}
+                    {hit.url && (
+                      <a
+                        href={hit.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[#70757a] hover:text-[#1a0dab] ml-auto flex items-center gap-0.5"
+                      >
+                        source <ExternalLink className="h-2.5 w-2.5" />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="py-12 text-[#70757a] text-sm">
+                No matching passages found for &quot;{query}&quot;. Try a broader term.
+              </div>
+            )}
           </div>
 
-          {response.results.map((hit, index) => (
-            <div
-              key={hit.doc_id}
-              className="p-4 sm:p-5 rounded-lg bg-zinc-900/50 border border-zinc-800 hover:border-zinc-700 transition-colors"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-6 w-6 items-center justify-center rounded bg-zinc-800 text-zinc-300 font-mono text-xs font-semibold border border-zinc-700 shrink-0 mt-0.5">
-                    {index + 1}
-                  </div>
-                  <div>
-                    <h4 className="text-sm sm:text-base font-semibold text-white">
-                      {hit.title}
-                    </h4>
-                    <span className="text-[11px] text-zinc-500 font-mono">DocID: #{hit.doc_id}</span>
-                  </div>
-                </div>
-
-                <div className="text-right shrink-0 font-mono">
-                  <div className="text-sm font-semibold text-zinc-100 tabular-nums">
-                    {hit.final_score.toFixed(4)}
-                  </div>
-                  <div className="text-[10px] text-zinc-500 uppercase">
-                    {mode === 'hybrid' && hit.rerank_score !== undefined
-                      ? 'L2 Cross-Encoder'
-                      : mode === 'hybrid'
-                      ? 'RRF Score'
-                      : mode === 'lexical'
-                      ? 'BM25 Score'
-                      : 'Cosine Sim'}
-                  </div>
-                </div>
+          {/* Right Column: Google Knowledge Panel Card (4 cols) */}
+          <div className="lg:col-span-4">
+            <div className="border border-[#dadce0] rounded-2xl p-5 bg-white google-card-shadow space-y-4 sticky top-36">
+              {/* Header */}
+              <div className="border-b border-[#dadce0] pb-3">
+                <span className="text-xs uppercase tracking-wider text-[#70757a] font-mono">
+                  Engine Knowledge Panel
+                </span>
+                <h3 className="text-xl font-normal text-[#202124] mt-0.5">
+                  TitanIR Engine
+                </h3>
+                <p className="text-xs text-[#5f6368] mt-0.5">
+                  High-Throughput Hybrid Retrieval System
+                </p>
               </div>
 
-              {/* Snippet */}
-              <p className="mt-2.5 text-xs sm:text-sm text-zinc-300 leading-relaxed font-sans pl-9">
-                {hit.snippet}
+              {/* Description */}
+              <p className="text-xs text-[#3c4043] leading-relaxed">
+                TitanIR combines <strong>SIMD Elias-Fano Block-Max WAND</strong>, <strong>SQ8 Quantized HNSW</strong>, and <strong>L2 Cross-Encoder reranking</strong> in native Rust to serve MS MARCO benchmark queries in sub-milliseconds.
               </p>
 
-              {/* Score Decomposition Bar */}
-              <div className="mt-3.5 pt-3 border-t border-zinc-850 flex flex-wrap items-center justify-between gap-3 text-xs pl-9">
-                <div className="flex flex-wrap items-center gap-1.5 font-mono text-[11px]">
-                  {hit.lexical_score !== undefined && (
-                    <span className="px-2 py-0.5 rounded bg-zinc-950 text-zinc-400 border border-zinc-800">
-                      BM25: {hit.lexical_score.toFixed(2)}
-                    </span>
-                  )}
-                  {hit.dense_score !== undefined && (
-                    <span className="px-2 py-0.5 rounded bg-zinc-950 text-zinc-400 border border-zinc-800">
-                      Dense: {hit.dense_score.toFixed(3)}
-                    </span>
-                  )}
-                  {hit.rrf_score !== undefined && (
-                    <span className="px-2 py-0.5 rounded bg-zinc-950 text-zinc-400 border border-zinc-800">
-                      RRF: {hit.rrf_score.toFixed(4)}
-                    </span>
-                  )}
-                  {hit.rerank_score !== undefined && (
-                    <span className="px-2 py-0.5 rounded bg-zinc-950 text-zinc-200 border border-zinc-700">
-                      L2 Neural: {hit.rerank_score.toFixed(4)}
-                    </span>
-                  )}
+              {/* Live Query Telemetry */}
+              {response && (
+                <div className="bg-[#f8f9fa] border border-[#dadce0] rounded-xl p-3 space-y-2 text-xs font-mono">
+                  <div className="text-[11px] font-semibold text-[#202124] uppercase tracking-wider">
+                    Query Telemetry
+                  </div>
+                  <div className="flex justify-between text-[#5f6368]">
+                    <span>Total Latency:</span>
+                    <span className="font-bold text-[#137333]">{response.timing.total_ms} ms</span>
+                  </div>
+                  <div className="flex justify-between text-[#5f6368]">
+                    <span>Lexical WAND:</span>
+                    <span>{response.timing.lexical_ms} ms</span>
+                  </div>
+                  <div className="flex justify-between text-[#5f6368]">
+                    <span>Dense HNSW:</span>
+                    <span>{response.timing.dense_ms} ms</span>
+                  </div>
+                  <div className="flex justify-between text-[#5f6368]">
+                    <span>L2 Rerank:</span>
+                    <span>{response.timing.rerank_ms} ms</span>
+                  </div>
+                  <div className="flex justify-between text-[#5f6368] border-t border-[#dadce0] pt-1">
+                    <span>Blocks Skipped:</span>
+                    <span className="text-[#1a73e8]">{response.metrics.blocks_skipped} / {response.metrics.blocks_skipped + response.metrics.blocks_evaluated}</span>
+                  </div>
+                  <div className="flex justify-between text-[#5f6368]">
+                    <span>Pruning Efficiency:</span>
+                    <span className="text-[#137333] font-semibold">{response.metrics.pruning_ratio_pct.toFixed(1)}%</span>
+                  </div>
                 </div>
+              )}
 
-                {hit.url && (
-                  <a
-                    href={hit.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-1 text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors font-mono"
-                  >
-                    <span>{hit.url}</span>
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-                )}
+              {/* Metadata Attributes */}
+              <div className="space-y-2 text-xs border-t border-[#dadce0] pt-3">
+                <div className="flex justify-between">
+                  <span className="text-[#70757a]">Engine Language:</span>
+                  <span className="font-medium text-[#202124]">Rust 2021 Edition</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#70757a]">Corpus:</span>
+                  <span className="font-medium text-[#202124]">MS MARCO (8.8M Docs)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#70757a]">Author Context:</span>
+                  <span className="font-medium text-[#1a73e8]">Mozilla Engineer</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#70757a]">Evaluation nDCG:</span>
+                  <span className="font-medium text-[#137333]">0.671 (+36% over BM25)</span>
+                </div>
               </div>
+
+              {/* Action Links */}
+              {onNavigateTab && (
+                <div className="border-t border-[#dadce0] pt-3 flex flex-col gap-1.5 text-xs">
+                  <button
+                    onClick={() => onNavigateTab('about')}
+                    className="text-left text-[#1a0dab] hover:underline flex items-center justify-between"
+                  >
+                    <span>Read About TitanIR & Dataset</span>
+                    <ArrowRight className="h-3 w-3" />
+                  </button>
+                  <button
+                    onClick={() => onNavigateTab('dictionary')}
+                    className="text-left text-[#1a0dab] hover:underline flex items-center justify-between"
+                  >
+                    <span>Browse Technical Dictionary</span>
+                    <ArrowRight className="h-3 w-3" />
+                  </button>
+                  <button
+                    onClick={() => onNavigateTab('pipeline')}
+                    className="text-left text-[#1a0dab] hover:underline flex items-center justify-between"
+                  >
+                    <span>Inspect Pipeline Architecture</span>
+                    <ArrowRight className="h-3 w-3" />
+                  </button>
+                </div>
+              )}
             </div>
-          ))}
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };
