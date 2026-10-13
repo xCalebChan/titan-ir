@@ -74,7 +74,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="text-[#fbbc05] font-semibold">t</span>
               <span className="text-[#4285f4] font-semibold">a</span>
               <span className="text-[#34a853] font-semibold">n</span>
-              <span className="text-[#ea4335] font-semibold ml-0.5">IR</span>
+              <span className="text-[#ea4335] font-semibold ml-0.5">Search</span>
+              <span className="text-[10px] font-mono text-[#70757a] ml-1.5 px-1.5 py-0.5 rounded bg-[#f1f3f4] border border-[#dadce0] hidden sm:inline">
+                TitanIR
+              </span>
             </div>
 
             {/* Header Search Input (shown when query is active or not on home) */}

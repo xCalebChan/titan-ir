@@ -1,8 +1,10 @@
-# TitanIR: High-Throughput Hybrid Retrieval Engine
+# TitanSearch (TitanIR): High-Performance Hybrid Search & Vector Retrieval Engine (Rust)
 
 [![Live Web App](https://img.shields.io/badge/Vercel-Live_Demo-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://web-zeta-nine-46.vercel.app)
 [![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/xCalebChan/titan-ir)
 [![Rust](https://img.shields.io/badge/Rust-2021_Edition-orange?style=for-the-badge&logo=rust)](https://www.rust-lang.org/)
+[![Vector Search](https://img.shields.io/badge/Vector_Search-HNSW_SQ8-blue?style=for-the-badge)](https://web-zeta-nine-46.vercel.app)
+[![Lexical Search](https://img.shields.io/badge/Lexical-BM25_WAND-green?style=for-the-badge)](https://web-zeta-nine-46.vercel.app)
 
 🔗 **Live Interactive Showcase:** [https://web-zeta-nine-46.vercel.app](https://web-zeta-nine-46.vercel.app)
 

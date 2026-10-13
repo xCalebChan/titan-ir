@@ -95,10 +95,10 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
               <span className="text-[#fbbc05]">t</span>
               <span className="text-[#4285f4]">a</span>
               <span className="text-[#34a853]">n</span>
-              <span className="text-[#ea4335] ml-1 font-medium">IR</span>
+              <span className="text-[#ea4335] ml-1 font-medium">Search</span>
             </span>
-            <div className="mt-1 text-xs font-mono uppercase tracking-wider text-[#70757a]">
-              Dual-Engine Hybrid Retrieval · MS MARCO 8.8M Dataset
+            <div className="mt-2 text-xs font-mono uppercase tracking-wider text-[#70757a]">
+              Full-Text & Vector Search Engine (TitanIR) · MS MARCO 8.8M Dataset
             </div>
           </div>
 
@@ -413,10 +413,10 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
                   Engine Knowledge Panel
                 </span>
                 <h3 className="text-xl font-normal text-[#202124] mt-0.5">
-                  TitanIR Engine
+                  TitanSearch Engine (TitanIR)
                 </h3>
                 <p className="text-xs text-[#5f6368] mt-0.5">
-                  High-Throughput Hybrid Retrieval System
+                  Full-Text & Vector Search Platform
                 </p>
               </div>
 
