@@ -1,4 +1,5 @@
-import type { EngineStats, SearchResponse, BenchmarkResponse } from './types';
+import type { EngineStats, SearchResponse, BenchmarkResponse, DocumentPassage } from './types';
+import { getActiveDataset } from './datasetStore';
 
 export const SAMPLE_PASSAGES = [
   {
@@ -123,12 +124,14 @@ export function simulateLocalSearch(
   mode: 'hybrid' | 'lexical' | 'dense',
   top_k = 10,
   rrf_k = 60,
-  rerank = true
+  rerank = true,
+  passagesInput?: DocumentPassage[]
 ): SearchResponse {
+  const passages = passagesInput || getActiveDataset().passages;
   const qLower = query.toLowerCase();
   const qWords = qLower.split(/\s+/).filter(w => w.length > 2);
 
-  const scoredDocs = SAMPLE_PASSAGES.map(doc => {
+  const scoredDocs = passages.map(doc => {
     const textLower = (doc.title + " " + doc.body).toLowerCase();
     
     // Lexical score

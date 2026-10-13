@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { LayoutGrid, Search, BookOpen, Layers, Zap, GitBranch, Cpu, Activity, Server, Info, ExternalLink, Moon, Sun, X, ChevronDown } from 'lucide-react';
+import { LayoutGrid, Search, BookOpen, Layers, Zap, GitBranch, Cpu, Activity, Server, Info, ExternalLink, Moon, Sun, X, ChevronDown, Database } from 'lucide-react';
 
 interface NavbarProps {
   activeTab: string;
@@ -39,6 +39,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const coreApps = [
     { id: 'search', label: 'Search', icon: Search, color: 'text-[#4285f4]' },
+    { id: 'datasets', label: 'Datasets', icon: Database, color: 'text-[#34a853]' },
     { id: 'pipeline', label: 'Pipeline', icon: Layers, color: 'text-[#fbbc05]' },
     { id: 'dictionary', label: 'Dictionary', icon: BookOpen, color: 'text-[#ea4335]' },
     { id: 'about', label: 'About', icon: Info, color: 'text-[#34a853]' },
@@ -133,6 +134,17 @@ export const Navbar: React.FC<NavbarProps> = ({
               }`}
             >
               Dictionary
+            </button>
+
+            <button
+              onClick={() => setActiveTab('datasets')}
+              className={`text-xs sm:text-sm font-normal px-2.5 py-1.5 rounded transition-colors ${
+                activeTab === 'datasets'
+                  ? 'text-[#1a73e8] font-medium'
+                  : 'text-[#3c4043] hover:text-[#202124] hover:bg-[#f8f9fa]'
+              }`}
+            >
+              Datasets
             </button>
 
             {/* Native status indicator */}

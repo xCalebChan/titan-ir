@@ -1,3 +1,19 @@
+export interface DocumentPassage {
+  doc_id: number;
+  title: string;
+  body: string;
+  url?: string;
+}
+
+export interface DatasetMeta {
+  id: string;
+  name: string;
+  description: string;
+  document_count: number;
+  is_custom: boolean;
+  indexed_at?: string;
+}
+
 export interface SearchHit {
   doc_id: number;
   title: string;

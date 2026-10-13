@@ -244,7 +244,7 @@ export const About: React.FC<AboutProps> = ({ onGoToSearch, onGoToDictionary }) 
               </p>
             </div>
 
-            <div className="p-5 rounded-xl border border-[#fbbc05]/50 dark:border-[#fbbc05]/30 bg-[#fef7e0]/30 dark:bg-[#303134] space-y-2 md:col-span-2">
+            <div className="p-5 rounded-xl border border-[#fbbc05]/50 dark:border-[#fbbc05]/30 bg-[#fef7e0]/30 dark:bg-[#303134] space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-mono font-semibold uppercase text-[#b06000] dark:text-[#fdd663]">
                   TODO · L2 Neural Reranking
@@ -258,7 +258,25 @@ export const About: React.FC<AboutProps> = ({ onGoToSearch, onGoToDictionary }) 
               </h3>
               <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
                 <strong>Current:</strong> First-stage hybrid score ranking.<br />
-                <strong>Improvement:</strong> Pass the top 50 candidates from first-stage retrieval through a deep transformer cross-encoder (e.g., <code>bge-reranker-base</code>) via embedded ONNX Runtime C API. Full query-document cross-attention elevates top-10 ranking relevance (nDCG@10) by an additional +13.9%.
+                <strong>Improvement:</strong> Pass top 50 candidates through a deep transformer cross-encoder (<code>bge-reranker-base</code>) via ONNX Runtime C API. Full cross-attention boosts top-10 ranking relevance (nDCG@10) by +13.9%.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-xl border border-[#fbbc05]/50 dark:border-[#fbbc05]/30 bg-[#fef7e0]/30 dark:bg-[#303134] space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono font-semibold uppercase text-[#b06000] dark:text-[#fdd663]">
+                  TODO · Corpus Ingestion
+                </span>
+                <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-white dark:bg-[#202124] border border-[#dadce0] text-[#70757a]">
+                  Step to Improve
+                </span>
+              </div>
+              <h3 className="text-base font-medium text-[#202124] dark:text-white">
+                Custom Dataset Ingestion & Dynamic Reindexing Pipeline
+              </h3>
+              <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
+                <strong>Current:</strong> Interactive in-browser dataset importer (JSON, CSV, Plain Text) and pre-indexed MS MARCO benchmark.<br />
+                <strong>Improvement:</strong> High-throughput streaming Rust CLI/REST ingestion pipeline. Concurrently tokenize multi-gigabyte corpora (JSONL, Parquet), construct Elias-Fano posting segments with Rayon thread pools, and hot-swap active search shards with zero downtime.
               </p>
             </div>
           </div>

@@ -9,6 +9,7 @@ import { HnswVisualizer } from './components/HnswVisualizer';
 import { Sq8Inspector } from './components/Sq8Inspector';
 import { StressTester } from './components/StressTester';
 import { EvaluationDashboard } from './components/EvaluationDashboard';
+import { DatasetManager } from './components/DatasetManager';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('search');
@@ -75,6 +76,14 @@ export const App: React.FC = () => {
         {activeTab === 'hnsw' && <HnswVisualizer />}
         {activeTab === 'sq8' && <Sq8Inspector />}
         {activeTab === 'benchmarks' && <StressTester isBackendConnected={isBackendConnected} />}
+        {activeTab === 'datasets' && (
+          <DatasetManager
+            onNavigateToSearch={(q) => {
+              if (q) setActiveQuery(q);
+              setActiveTab('search');
+            }}
+          />
+        )}
         {activeTab === 'eval' && <EvaluationDashboard />}
       </main>
 
@@ -97,6 +106,9 @@ export const App: React.FC = () => {
             </button>
             <button onClick={() => setActiveTab('dictionary')} className="hover:text-[#202124]">
               Dictionary
+            </button>
+            <button onClick={() => setActiveTab('datasets')} className="hover:text-[#202124]">
+              Import Dataset
             </button>
             <button onClick={() => setActiveTab('pipeline')} className="hover:text-[#202124]">
               How Search Works

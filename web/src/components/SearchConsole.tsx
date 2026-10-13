@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Search, X, Sliders, ExternalLink, Sparkles, Zap, GitBranch, Cpu, BookOpen, Layers, Info, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Search, X, Sliders, ExternalLink, Sparkles, Zap, GitBranch, Cpu, BookOpen, Layers, Info, CheckCircle2, ArrowRight, Database } from 'lucide-react';
 import { SearchResponse, SearchHit } from '../types';
 import { QUERY_SUGGESTIONS, simulateLocalSearch } from '../sampleData';
+import { getActiveDataset, subscribeDatasetChange, resetToDefaultDataset } from '../datasetStore';
 
 interface SearchConsoleProps {
   isBackendConnected: boolean;
@@ -25,6 +26,18 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
 
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<SearchResponse | null>(null);
+  const [activeDataset, setActiveDataset] = useState(() => getActiveDataset());
+
+  useEffect(() => {
+    const unsub = subscribeDatasetChange(() => {
+      const updated = getActiveDataset();
+      setActiveDataset(updated);
+      if (hasSearched && query.trim()) {
+        executeSearch(query, mode, updated.passages);
+      }
+    });
+    return unsub;
+  }, [hasSearched, query, mode]);
 
   useEffect(() => {
     if (externalQuery && externalQuery !== query) {
@@ -33,7 +46,7 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
     }
   }, [externalQuery]);
 
-  const executeSearch = async (targetQuery = query, targetMode = mode) => {
+  const executeSearch = async (targetQuery = query, targetMode = mode, targetPassages = activeDataset.passages) => {
     if (!targetQuery.trim()) return;
     setLoading(true);
     setHasSearched(true);
@@ -65,7 +78,7 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
 
     // In-browser simulation fallback
     setTimeout(() => {
-      const localData = simulateLocalSearch(targetQuery, targetMode, topK, rrfK, rerank);
+      const localData = simulateLocalSearch(targetQuery, targetMode, topK, rrfK, rerank, targetPassages);
       setResponse(localData);
       setLoading(false);
     }, 40);
@@ -163,6 +176,32 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Active Dataset Status Bar on Home */}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs text-[#5f6368] bg-[#f8f9fa] border border-[#dadce0] rounded-full px-4 py-1.5 w-fit mx-auto">
+            <Database className="h-3.5 w-3.5 text-[#1a73e8]" />
+            <span>Corpus: <strong className="text-[#202124]">{activeDataset.meta.name}</strong> ({activeDataset.meta.document_count} passages)</span>
+            <span>·</span>
+            <button
+              type="button"
+              onClick={() => onNavigateTab && onNavigateTab('datasets')}
+              className="text-[#1a73e8] hover:underline font-medium cursor-pointer"
+            >
+              Change / Import Dataset
+            </button>
+            {activeDataset.meta.id !== 'msmarco' && (
+              <>
+                <span>·</span>
+                <button
+                  type="button"
+                  onClick={() => resetToDefaultDataset()}
+                  className="text-[#70757a] hover:text-[#202124] underline cursor-pointer"
+                >
+                  Reset to Default
+                </button>
+              </>
+            )}
           </div>
         </div>
 
@@ -336,10 +375,32 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
 
       {/* Main Content Area */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        {/* Telemetry line: "About X results (0.38 milliseconds)" */}
+        {/* Telemetry line: "About X results (0.38 milliseconds)" + Corpus info */}
         {response && (
-          <div className="text-xs text-[#70757a] mb-5">
-            About {response.results.length} results ({response.timing.total_ms} milliseconds)
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-[#70757a] mb-5">
+            <div>
+              About {response.results.length} results ({response.timing.total_ms} milliseconds)
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[#5f6368]">Corpus:</span>
+              <span className="font-medium text-[#202124]">{activeDataset.meta.name}</span>
+              <button
+                type="button"
+                onClick={() => onNavigateTab && onNavigateTab('datasets')}
+                className="text-[#1a73e8] hover:underline font-medium cursor-pointer"
+              >
+                Change / Import
+              </button>
+              {activeDataset.meta.id !== 'msmarco' && (
+                <button
+                  type="button"
+                  onClick={() => resetToDefaultDataset()}
+                  className="text-[#70757a] hover:text-[#202124] underline cursor-pointer"
+                >
+                  Reset
+                </button>
+              )}
+            </div>
           </div>
         )}
 

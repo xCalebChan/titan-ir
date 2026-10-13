@@ -53,6 +53,7 @@ TitanSearch is a production-grade, high-throughput dual-engine hybrid retrieval 
 | **HNSW Proximity Graphs** | Vector Indexing | Replace flat $O(N)$ vector scan with a multi-layer graph for logarithmic $O(\log N)$ approximate nearest neighbor beam search. |
 | **Scalar Quantization (SQ8)** | Memory & SIMD | Convert 32-bit floats to 8-bit unsigned integers (-75% RAM), executing 32 coordinate multiplications per cycle with AVX2 SIMD intrinsics. |
 | **Neural Cross-Encoder** | L2 Reranking | Embed ONNX Runtime C bindings (`bge-reranker-base`) for full token cross-attention on top-50 candidates, lifting nDCG@10 by +13.9%. |
+| **Dataset Ingestion Pipeline** | Corpus Management | Stream multi-gigabyte corpora (JSONL, Parquet, CSV) via Rayon thread pools into immutable memory-mapped segment shards with zero-downtime hot-swapping. |
 
 ## Workspace Structure
 
