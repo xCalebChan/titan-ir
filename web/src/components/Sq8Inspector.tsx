@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Cpu, Calculator } from 'lucide-react';
+import { MathFormula } from './MathFormula';
 
 export const Sq8Inspector: React.FC = () => {
   const [corpusSize, setCorpusSize] = useState<number>(1_000_000);
@@ -135,8 +136,8 @@ export const Sq8Inspector: React.FC = () => {
           To maintain retrieval precision, query vectors remain unquantized in FP32 while document vectors are stored in SQ8. Asymmetric Distance Computation avoids quantizing the query and executes across unrolled 32-byte chunks using AVX2:
         </p>
 
-        <div className="p-3.5 rounded-xl bg-white font-mono text-xs text-[#202124] border border-[#dadce0] overflow-x-auto">
-          {"\\langle Q, D \\rangle = D_{\\min} \\sum_{i=1}^{d} Q_i + \\frac{D_{\\text{diff}}}{255} \\sum_{i=1}^{d} \\left( Q_i \\cdot D_{\\text{quant}}[i] \\right)"}
+        <div className="p-3.5 rounded-xl bg-white border border-[#dadce0] overflow-x-auto text-sm">
+          <MathFormula formula="\\langle Q, D \\rangle = D_{\\min} \\sum_{i=1}^{d} Q_i + \\frac{D_{\\text{diff}}}{255} \\sum_{i=1}^{d} \\left( Q_i \\cdot D_{\\text{quant}}[i] \\right)" />
         </div>
       </div>
     </div>

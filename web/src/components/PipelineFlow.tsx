@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Layers, Zap, GitBranch, Cpu, Filter, CheckCircle2, ChevronRight, Code, Terminal } from 'lucide-react';
+import { MathFormula } from './MathFormula';
 
 interface StageDetail {
   id: string;
@@ -229,8 +230,8 @@ export const PipelineFlow: React.FC = () => {
         {selectedStage.mathFormula && (
           <div>
             <h5 className="text-xs font-mono uppercase text-[#70757a] mb-1">Mathematical Formulation</h5>
-            <div className="p-3 rounded-xl bg-[#f8f9fa] border border-[#dadce0] font-mono text-xs sm:text-sm text-[#202124] overflow-x-auto">
-              {selectedStage.mathFormula}
+            <div className="p-3 rounded-xl bg-[#f8f9fa] border border-[#dadce0] text-sm text-[#202124]">
+              <MathFormula formula={selectedStage.mathFormula} />
             </div>
           </div>
         )}

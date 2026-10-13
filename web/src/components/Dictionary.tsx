@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Search, BookOpen, ChevronRight, Hash, Code2, Calculator, BookMarked, ExternalLink } from 'lucide-react';
 import { DICTIONARY_TERMS, CATEGORIES } from '../dictionaryData';
+import { MathFormula } from './MathFormula';
 
 export const Dictionary: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -209,9 +210,7 @@ export const Dictionary: React.FC = () => {
                     Mathematical Formulation
                   </h3>
                   <div className="bg-[#f8f9fa] border border-[#dadce0] p-4 rounded-xl space-y-2">
-                    <div className="font-mono text-sm sm:text-base text-[#202124] overflow-x-auto py-1">
-                      {activeTerm.mathFormula}
-                    </div>
+                    <MathFormula formula={activeTerm.mathFormula} />
                     {activeTerm.mathExplanation && (
                       <p className="text-xs text-[#5f6368] leading-relaxed border-t border-[#dadce0] pt-2">
                         {activeTerm.mathExplanation}
