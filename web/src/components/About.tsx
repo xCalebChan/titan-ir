@@ -1,5 +1,5 @@
 import React from 'react';
-import { Database, Search, Cpu, Zap, Layers, Server, Code2, Globe, Heart, ShieldCheck, ExternalLink, ArrowRight } from 'lucide-react';
+import { Database, Search, Cpu, Zap, Layers, Server, Globe, Heart, ShieldCheck, ArrowRight } from 'lucide-react';
 
 interface AboutProps {
   onGoToSearch: () => void;
@@ -277,71 +277,6 @@ export const About: React.FC<AboutProps> = ({ onGoToSearch, onGoToDictionary }) 
                 </tr>
               </tbody>
             </table>
-          </div>
-        </section>
-
-        {/* Section 5: Resume & ATS Keywords */}
-        <section className="space-y-4">
-          <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-full bg-[#e8f0fe] dark:bg-[#174ea6]/20 flex items-center justify-center text-[#1a73e8] dark:text-[#8ab4f8]">
-              <Code2 className="h-4 w-4" />
-            </div>
-            <h2 className="text-2xl font-normal text-[#202124] dark:text-white">
-              Resume & ATS Engineering Keywords
-            </h2>
-          </div>
-
-          <div className="bg-[#f8f9fa] dark:bg-[#303134] border border-[#dadce0] dark:border-[#3c4043] rounded-2xl p-6 sm:p-8 space-y-4">
-            <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-[#70757a] mb-2 font-mono">
-                Industry & ATS Skill Tags
-              </h3>
-              <div className="flex flex-wrap gap-1.5 font-mono text-xs">
-                {[
-                  'Search Engine Architecture',
-                  'Vector Search (HNSW)',
-                  'Full-Text Inverted Index',
-                  'Rust (Systems Programming)',
-                  'Scalar Quantization (SQ8)',
-                  'SIMD AVX2 Intrinsics',
-                  'Block-Max WAND Pruning',
-                  'ONNX Runtime C API',
-                  'Cross-Encoder Neural Reranking',
-                  'Reciprocal Rank Fusion (RRF)',
-                  'Memory-Mapped Files (mmap)',
-                  'Zero-Allocation Hot Loop',
-                  'MS MARCO Ground Truth Eval',
-                  'Sub-Millisecond Tail Latency',
-                ].map((tag, idx) => (
-                  <span
-                    key={idx}
-                    className="px-2.5 py-1 rounded-full bg-white dark:bg-[#202124] border border-[#dadce0] dark:border-[#3c4043] text-[#3c4043] dark:text-[#bdc1c6]"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="pt-2">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-[#70757a] mb-2 font-mono">
-                Recruiter-Ready Resume Bullets (Google XYZ Format)
-              </h3>
-              <ul className="space-y-2 text-xs sm:text-sm text-[#3c4043] dark:text-[#bdc1c6] list-disc pl-5 leading-relaxed">
-                <li>
-                  <strong>Engineered a high-throughput hybrid search engine in Rust</strong> uniting SIMD Elias-Fano Block-Max WAND with 8-bit quantized HNSW vector search, indexing 8.8M MS MARCO passages with sub-millisecond p50 latency (&lt;0.40 ms).
-                </li>
-                <li>
-                  <strong>Reduced vector memory footprint by 75%</strong> (1.54 GB to 384 MB per 1M docs) by developing an 8-bit Scalar Quantization (SQ8) pipeline accelerated with AVX2 SIMD integer dot products.
-                </li>
-                <li>
-                  <strong>Increased top-10 retrieval ranking relevance by +36.4% nDCG@10</strong> over baseline BM25 by architecting a two-stage pipeline with Reciprocal Rank Fusion (L1) and embedded ONNX Runtime Cross-Encoder neural reranking (L2).
-                </li>
-                <li>
-                  <strong>Eliminated heap allocator contention</strong> on concurrent query execution by designing zero-allocation scratch ring buffers and memory-mapped (<code className="font-mono">mmap</code>) append-only flat binary storage.
-                </li>
-              </ul>
-            </div>
           </div>
         </section>
 
