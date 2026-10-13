@@ -19,7 +19,7 @@ export const About: React.FC<AboutProps> = ({ onGoToSearch, onGoToDictionary }) 
           About TitanSearch
         </h1>
         <p className="mt-2 text-lg text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed max-w-3xl">
-          A high-throughput full-text and vector search engine combining SIMD Elias-Fano Block-Max WAND, SQ8 Quantized HNSW, and Cross-Encoder neural reranking.
+          A high-performance full-text and vector search engine built on standard Inverted Index BM25, Dense Vector Cosine Similarity, and Linear Hybrid Fusion in Rust.
         </p>
       </div>
 
@@ -40,13 +40,13 @@ export const About: React.FC<AboutProps> = ({ onGoToSearch, onGoToDictionary }) 
               I work at <strong>Mozilla</strong> and have a deep personal and professional interest in the <strong>search and information retrieval space</strong>.
             </p>
             <p className="text-sm text-[#3c4043] dark:text-[#bdc1c6] leading-relaxed">
-              Search systems are undergoing a historic transformation. For over three decades, keyword search built upon inverted indexes and probabilistic scoring (TF-IDF, BM25, Lucene) has formed the backbone of web and enterprise search. In recent years, deep learning ushered in dense vector search (embeddings, bi-encoders, HNSW vector databases) to solve semantic mismatch.
+              Search systems are undergoing a historic transformation. For over three decades, keyword search built upon inverted indexes and probabilistic scoring (TF-IDF, BM25, Lucene) has formed the backbone of web and enterprise search. In recent years, deep learning ushered in dense vector search (embeddings, bi-encoders, vector databases) to solve semantic mismatch.
             </p>
             <p className="text-sm text-[#3c4043] dark:text-[#bdc1c6] leading-relaxed">
-              However, <em>dense vector search alone is fundamentally incomplete</em>: it struggles with exact part numbers, rare keywords, code identifiers, and terminology, while consuming massive amounts of RAM. Conversely, lexical search misses synonymy and semantic intent.
+              However, <em>dense vector search alone is fundamentally incomplete</em>: it struggles with exact part numbers, rare keywords, code identifiers, and terminology. Conversely, lexical search misses synonymy and semantic intent.
             </p>
             <p className="text-sm text-[#3c4043] dark:text-[#bdc1c6] leading-relaxed">
-              <strong>TitanSearch</strong> was built from scratch in <strong>Rust</strong> to explore what a modern, production-grade <strong>dual-engine hybrid search architecture</strong> looks like when designed with mechanical sympathy: zero heap allocation on the query hot loop, SIMD bitvector compression, 8-bit vector quantization, and embedded neural reranking without Python serving latency.
+              <strong>TitanSearch</strong> was built from scratch in <strong>Rust</strong> to demonstrate a clean, reliable <strong>dual-engine hybrid search architecture</strong> using standard, battle-tested algorithms: standard inverted index posting lists with BM25 probabilistic scoring, exact dense cosine vector similarity, and predictable hybrid fusion. It emphasizes simplicity and mechanical sympathy, while establishing an explicit roadmap of advanced optimizations for scale.
             </p>
           </div>
         </section>
@@ -88,7 +88,7 @@ export const About: React.FC<AboutProps> = ({ onGoToSearch, onGoToDictionary }) 
 
             <div className="space-y-3 pt-2 text-sm text-[#3c4043] dark:text-[#bdc1c6] leading-relaxed">
               <p>
-                <strong>The Two Pillars of Retrieval:</strong> Just as the Titans upheld the celestial spheres upon twin pillars, TitanSearch is structurally supported by two co-equal pillars: the <em>Sparse Lexical Engine</em> (SIMD Elias-Fano Block-Max WAND) and the <em>Dense Semantic Engine</em> (SQ8 Quantized HNSW).
+                <strong>The Two Pillars of Retrieval:</strong> Just as the Titans upheld the celestial spheres upon twin pillars, TitanSearch is structurally supported by two co-equal pillars: the <em>Sparse Lexical Engine</em> (Standard Inverted Index + BM25) and the <em>Dense Semantic Engine</em> (Dense Vector Space + Cosine Similarity).
               </p>
               <p>
                 <strong>Systems Durability & Memory Safety:</strong> Built with Rust&apos;s fearless concurrency, zero-allocation query hot loops, and OS <code>mmap</code> virtual memory paging, the engine is designed for titanium-like resilience — avoiding garbage collection freezes, lock contention, and memory fragmentation.
@@ -97,71 +97,168 @@ export const About: React.FC<AboutProps> = ({ onGoToSearch, onGoToDictionary }) 
           </div>
         </section>
 
-        {/* Section 2: What TitanSearch Is */}
+        {/* Section 2: What TitanSearch Is (Core Standard Algorithms) */}
         <section className="space-y-4">
           <div className="flex items-center gap-2.5">
             <div className="h-8 w-8 rounded-full bg-[#fce8e6] dark:bg-[#c5221f]/20 flex items-center justify-center text-[#d93025] dark:text-[#f28b82]">
               <Cpu className="h-4 w-4" />
             </div>
             <h2 className="text-2xl font-normal text-[#202124] dark:text-white">
-              What TitanSearch Is
+              Core Engine: Standard Algorithms
             </h2>
           </div>
 
           <p className="text-sm text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
-            TitanSearch is an end-to-end native hybrid search engine designed to achieve both state-of-the-art ranking relevance and sub-millisecond tail latency.
+            For maximum clarity, reliability, and correctness, TitanSearch is built on straightforward, industry-standard information retrieval algorithms:
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-5 rounded-xl border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#202124] space-y-2">
               <div className="flex items-center gap-2 text-sm font-semibold text-[#1a73e8] dark:text-[#8ab4f8]">
                 <Zap className="h-4 w-4" />
-                1. Lexical Engine (Rust)
+                1. Standard Lexical Search
               </div>
               <h3 className="text-base font-medium text-[#202124] dark:text-white">
-                SIMD Elias-Fano & Block-Max WAND
+                Inverted Index & BM25 Scoring
               </h3>
               <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
-                Splits inverted index posting lists into 128-postings blocks. Encodes sorted DocIDs using Elias-Fano quasi-succinct bitvectors for hardware popcount jumps. Tracks per-block maximum BM25 contributions to dynamically skip up to 90% of non-competitive blocks using min-heap threshold θ.
+                Maps tokenized and Porter-stemmed keywords to sorted posting lists containing term frequency and document length. Scores candidates using standard Robertson-Spärck Jones BM25 with k₁ = 1.2 and b = 0.75 for rock-solid keyword precision.
               </p>
             </div>
 
             <div className="p-5 rounded-xl border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#202124] space-y-2">
               <div className="flex items-center gap-2 text-sm font-semibold text-[#137333] dark:text-[#81c995]">
                 <Search className="h-4 w-4" />
-                2. Dense Engine (Rust)
+                2. Standard Dense Search
               </div>
               <h3 className="text-base font-medium text-[#202124] dark:text-white">
-                SQ8 Quantized HNSW Graph Traversal
+                Vector Space & Cosine Similarity (k-NN)
               </h3>
               <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
-                Indexes 384-dimensional dense semantic vectors using a multi-layer Navigable Small World proximity graph. Compresses 32-bit floats into 8-bit integers via Scalar Quantization (SQ8), cutting vector memory by 75% and accelerating greedy beam search via AVX2 SIMD dot products.
+                Computes 384-dimensional dense semantic embeddings for documents and queries. Ranks candidates via exact cosine similarity (normalized dot product) to capture semantic synonyms and concepts without approximation distortion.
               </p>
             </div>
 
             <div className="p-5 rounded-xl border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#202124] space-y-2">
               <div className="flex items-center gap-2 text-sm font-semibold text-[#a142f4] dark:text-[#d7aefb]">
                 <Layers className="h-4 w-4" />
-                3. Reciprocal Rank Fusion (L1)
+                3. Standard Hybrid Fusion
               </div>
               <h3 className="text-base font-medium text-[#202124] dark:text-white">
-                Scale-Invariant Candidate Merging
+                Linear Score Combination & RRF
               </h3>
               <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
-                Takes the top-1,000 candidates from both lexical and dense engines. Merges them without requiring brittle score calibration using reciprocal rank weighting 1 / (60 + rank), extracting a consensus top-50 pool for neural reranking.
+                Fuses normalized BM25 keyword relevance with semantic cosine similarity using weighted linear interpolation (α · BM25 + (1 - α) · Cosine) or Reciprocal Rank Fusion, ensuring both exact keyword hits and semantic concepts are surfaced.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 3: Steps to Improve / Future Optimization Roadmap (TODO) */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-2.5">
+            <div className="h-8 w-8 rounded-full bg-[#fef7e0] dark:bg-[#f29900]/20 flex items-center justify-center text-[#ea8600] dark:text-[#fdd663]">
+              <Server className="h-4 w-4" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-normal text-[#202124] dark:text-white">
+                Steps to Improve: Optimization Roadmap (TODO)
+              </h2>
+            </div>
+          </div>
+
+          <p className="text-sm text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
+            While TitanSearch implements clean, typical algorithms for its core serving loop, the following advanced systems algorithms are planned as progressive optimization milestones for hyperscale deployment:
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-5 rounded-xl border border-[#fbbc05]/50 dark:border-[#fbbc05]/30 bg-[#fef7e0]/30 dark:bg-[#303134] space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono font-semibold uppercase text-[#b06000] dark:text-[#fdd663]">
+                  TODO · Lexical Pruning
+                </span>
+                <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-white dark:bg-[#202124] border border-[#dadce0] text-[#70757a]">
+                  Step to Improve
+                </span>
+              </div>
+              <h3 className="text-base font-medium text-[#202124] dark:text-white">
+                Block-Max WAND (BMW) Dynamic Pruning
+              </h3>
+              <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
+                <strong>Current:</strong> Standard full posting list traversal with min-heap top-K.<br />
+                <strong>Improvement:</strong> Organize posting lists into 128-postings blocks with precomputed maximum BM25 bounds. Skip up to 90% of non-competitive blocks whose upper-bound score cannot beat the heap threshold θ, reducing tail latency by 5-10x.
               </p>
             </div>
 
-            <div className="p-5 rounded-xl border border-[#dadce0] dark:border-[#3c4043] bg-white dark:bg-[#202124] space-y-2">
-              <div className="flex items-center gap-2 text-sm font-semibold text-[#ea8600] dark:text-[#fdd663]">
-                <Server className="h-4 w-4" />
-                4. Cross-Encoder Reranker (L2)
+            <div className="p-5 rounded-xl border border-[#fbbc05]/50 dark:border-[#fbbc05]/30 bg-[#fef7e0]/30 dark:bg-[#303134] space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono font-semibold uppercase text-[#b06000] dark:text-[#fdd663]">
+                  TODO · Index Compression
+                </span>
+                <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-white dark:bg-[#202124] border border-[#dadce0] text-[#70757a]">
+                  Step to Improve
+                </span>
               </div>
               <h3 className="text-base font-medium text-[#202124] dark:text-white">
-                Full Token Interaction via ONNX Runtime
+                Elias-Fano Quasi-Succinct Bitvectors
               </h3>
               <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
-                Applies bge-reranker-base cross-attention across [CLS] Query [SEP] Doc tokens for the top 50 candidates directly in native code via the ONNX Runtime C API. Computes softmax probabilities to produce the final top-10 ranked results.
+                <strong>Current:</strong> Standard 32-bit integer DocID arrays.<br />
+                <strong>Improvement:</strong> Compress strictly monotonic DocIDs down to ~8 bits per ID using Elias-Fano high/low bit separation, enabling O(1) random jumps via CPU hardware <code>select64</code> and <code>popcount</code> instructions without decompressing entire lists.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-xl border border-[#fbbc05]/50 dark:border-[#fbbc05]/30 bg-[#fef7e0]/30 dark:bg-[#303134] space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono font-semibold uppercase text-[#b06000] dark:text-[#fdd663]">
+                  TODO · Vector Indexing
+                </span>
+                <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-white dark:bg-[#202124] border border-[#dadce0] text-[#70757a]">
+                  Step to Improve
+                </span>
+              </div>
+              <h3 className="text-base font-medium text-[#202124] dark:text-white">
+                Hierarchical Navigable Small World (HNSW) Graphs
+              </h3>
+              <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
+                <strong>Current:</strong> Standard exact k-NN flat vector search.<br />
+                <strong>Improvement:</strong> Build a multi-layer proximity graph with exponential layer decay. Replace linear O(N) scan with logarithmic O(log N) greedy beam search navigation across millions of document embeddings.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-xl border border-[#fbbc05]/50 dark:border-[#fbbc05]/30 bg-[#fef7e0]/30 dark:bg-[#303134] space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono font-semibold uppercase text-[#b06000] dark:text-[#fdd663]">
+                  TODO · Memory & Quantization
+                </span>
+                <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-white dark:bg-[#202124] border border-[#dadce0] text-[#70757a]">
+                  Step to Improve
+                </span>
+              </div>
+              <h3 className="text-base font-medium text-[#202124] dark:text-white">
+                Scalar Quantization (SQ8) & AVX2 SIMD
+              </h3>
+              <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
+                <strong>Current:</strong> Standard 32-bit floating-point (FP32) embedding vectors.<br />
+                <strong>Improvement:</strong> Map float dimensions into 8-bit unsigned integers (v_quant), slashing vector RAM by 75% (1.54 GB to 384 MB per 1M docs) and computing 32 parallel coordinate multiplications per cycle using AVX2 SIMD intrinsics.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-xl border border-[#fbbc05]/50 dark:border-[#fbbc05]/30 bg-[#fef7e0]/30 dark:bg-[#303134] space-y-2 md:col-span-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono font-semibold uppercase text-[#b06000] dark:text-[#fdd663]">
+                  TODO · L2 Neural Reranking
+                </span>
+                <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-white dark:bg-[#202124] border border-[#dadce0] text-[#70757a]">
+                  Step to Improve
+                </span>
+              </div>
+              <h3 className="text-base font-medium text-[#202124] dark:text-white">
+                Cross-Encoder Neural Reranking via ONNX Runtime
+              </h3>
+              <p className="text-xs text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed">
+                <strong>Current:</strong> First-stage hybrid score ranking.<br />
+                <strong>Improvement:</strong> Pass the top 50 candidates from first-stage retrieval through a deep transformer cross-encoder (e.g., <code>bge-reranker-base</code>) via embedded ONNX Runtime C API. Full query-document cross-attention elevates top-10 ranking relevance (nDCG@10) by an additional +13.9%.
               </p>
             </div>
           </div>

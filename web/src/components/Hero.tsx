@@ -27,7 +27,7 @@ export const Hero: React.FC<HeroProps> = ({
           </h1>
 
           <p className="mt-3.5 text-base sm:text-lg text-zinc-400 font-normal leading-relaxed">
-            High-Throughput Hybrid Search uniting <span className="text-zinc-200 font-medium">SIMD Elias-Fano Block-Max WAND</span> with <span className="text-zinc-200 font-medium">SQ8 Quantized HNSW Graphs</span> and <span className="text-zinc-200 font-medium">L2 Cross-Encoder Neural Reranking</span>.
+            High-Performance Hybrid Search uniting <span className="text-zinc-200 font-medium">Standard Inverted Index BM25</span> with <span className="text-zinc-200 font-medium">Dense Vector Cosine Similarity</span> in native Rust, backed by an extensible optimization roadmap.
           </p>
 
           {/* Action buttons */}

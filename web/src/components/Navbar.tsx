@@ -37,16 +37,19 @@ export const Navbar: React.FC<NavbarProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const apps = [
+  const coreApps = [
     { id: 'search', label: 'Search', icon: Search, color: 'text-[#4285f4]' },
+    { id: 'pipeline', label: 'Pipeline', icon: Layers, color: 'text-[#fbbc05]' },
     { id: 'dictionary', label: 'Dictionary', icon: BookOpen, color: 'text-[#ea4335]' },
     { id: 'about', label: 'About', icon: Info, color: 'text-[#34a853]' },
-    { id: 'pipeline', label: 'Pipeline', icon: Layers, color: 'text-[#fbbc05]' },
+    { id: 'eval', label: 'Evaluation', icon: Server, color: 'text-[#4285f4]' },
+  ];
+
+  const roadmapApps = [
     { id: 'wand', label: 'Block WAND', icon: Zap, color: 'text-[#4285f4]' },
     { id: 'hnsw', label: 'HNSW Graph', icon: GitBranch, color: 'text-[#34a853]' },
     { id: 'sq8', label: 'SQ8 Quant', icon: Cpu, color: 'text-[#ea4335]' },
-    { id: 'benchmarks', label: 'Benchmark', icon: Activity, color: 'text-[#fbbc05]' },
-    { id: 'eval', label: 'MS MARCO', icon: Server, color: 'text-[#4285f4]' },
+    { id: 'benchmarks', label: 'Stress Test', icon: Activity, color: 'text-[#fbbc05]' },
   ];
 
   const handleHeaderSearch = (e: React.FormEvent) => {
@@ -154,11 +157,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               {/* 3x3 App Launcher Dropdown */}
               {showAppLauncher && (
                 <div className="absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-[#dadce0] p-4 z-50 animate-in fade-in zoom-in-95 duration-150">
-                  <div className="text-[11px] font-medium uppercase tracking-wider text-[#70757a] px-2 mb-2">
-                    Engine Apps & Exploration
+                  <div className="text-[11px] font-medium uppercase tracking-wider text-[#70757a] px-2 mb-1.5">
+                    Core Engine (Standard)
                   </div>
-                  <div className="grid grid-cols-3 gap-2 text-center">
-                    {apps.map((app) => {
+                  <div className="grid grid-cols-3 gap-1.5 text-center mb-3">
+                    {coreApps.map((app) => {
                       const Icon = app.icon;
                       const isCur = activeTab === app.id;
                       return (
@@ -168,14 +171,43 @@ export const Navbar: React.FC<NavbarProps> = ({
                             setActiveTab(app.id);
                             setShowAppLauncher(false);
                           }}
-                          className={`flex flex-col items-center justify-center p-3 rounded-xl transition-colors ${
+                          className={`flex flex-col items-center justify-center p-2 rounded-xl transition-colors ${
                             isCur
                               ? 'bg-[#e8f0fe] text-[#1a73e8]'
                               : 'hover:bg-[#f8f9fa] text-[#3c4043]'
                           }`}
                         >
-                          <Icon className={`h-6 w-6 mb-1.5 ${app.color}`} />
-                          <span className="text-[11px] font-medium leading-tight">
+                          <Icon className={`h-5 w-5 mb-1 ${app.color}`} />
+                          <span className="text-[10px] font-medium leading-tight">
+                            {app.label}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="text-[11px] font-medium uppercase tracking-wider text-[#b06000] px-2 mb-1.5 border-t border-[#dadce0] pt-2">
+                    Steps to Improve (Roadmap)
+                  </div>
+                  <div className="grid grid-cols-2 gap-1.5 text-center">
+                    {roadmapApps.map((app) => {
+                      const Icon = app.icon;
+                      const isCur = activeTab === app.id;
+                      return (
+                        <button
+                          key={app.id}
+                          onClick={() => {
+                            setActiveTab(app.id);
+                            setShowAppLauncher(false);
+                          }}
+                          className={`flex items-center gap-2 p-2 rounded-xl text-left transition-colors ${
+                            isCur
+                              ? 'bg-[#fef7e0] text-[#b06000]'
+                              : 'hover:bg-[#f8f9fa] text-[#3c4043]'
+                          }`}
+                        >
+                          <Icon className={`h-4 w-4 shrink-0 ${app.color}`} />
+                          <span className="text-[10px] font-medium leading-tight">
                             {app.label}
                           </span>
                         </button>

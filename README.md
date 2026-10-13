@@ -1,10 +1,10 @@
-# TitanSearch (TitanIR): High-Performance Hybrid Search & Vector Retrieval Engine (Rust)
+# TitanSearch: High-Performance Full-Text & Vector Search Engine (Rust)
 
 [![Live Web App](https://img.shields.io/badge/Vercel-Live_Demo-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://web-zeta-nine-46.vercel.app)
 [![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/xCalebChan/titan-ir)
 [![Rust](https://img.shields.io/badge/Rust-2021_Edition-orange?style=for-the-badge&logo=rust)](https://www.rust-lang.org/)
-[![Vector Search](https://img.shields.io/badge/Vector_Search-HNSW_SQ8-blue?style=for-the-badge)](https://web-zeta-nine-46.vercel.app)
-[![Lexical Search](https://img.shields.io/badge/Lexical-BM25_WAND-green?style=for-the-badge)](https://web-zeta-nine-46.vercel.app)
+[![Vector Search](https://img.shields.io/badge/Vector_Search-Cosine_k--NN-blue?style=for-the-badge)](https://web-zeta-nine-46.vercel.app)
+[![Lexical Search](https://img.shields.io/badge/Lexical-Standard_BM25-green?style=for-the-badge)](https://web-zeta-nine-46.vercel.app)
 
 🔗 **Live Interactive Showcase:** [https://web-zeta-nine-46.vercel.app](https://web-zeta-nine-46.vercel.app)
 
@@ -14,39 +14,45 @@
            ┌─────────────────────┴─────────────────────┐
            ▼                                           ▼
 [Lexical Engine (Rust)]                     [Dense Engine (Rust)]
-  • SIMD Elias-Fano Bitsets                   • HNSW Graph Traversal
-  • Block-Max WAND Pruning                    • SQ8 Vector Quantization
+  • Standard Inverted Index                   • 384-d Dense Embeddings
+  • Robertson-Spärck Jones BM25               • Exact Cosine Similarity (k-NN)
            │                                           │
            └─────────────────────┬─────────────────────┘
                                  ▼
-                     Reciprocal Rank Fusion (L1)
-                      (Top-1,000 Candidates)
+                     Standard Hybrid Fusion
+                     (Score Linear Interpolation & RRF)
                                  │
                                  ▼
-                  Cross-Encoder Reranker (L2)
-                     (ONNX Runtime / C API)
-                                 │
-                                 ▼
-             Evaluation Framework: nDCG@10, MRR@10, p99
+              [Steps to Improve / Optimization Roadmap]
+                 • Block-Max WAND Pruning & Elias-Fano
+                 • HNSW Graph Traversal & SQ8 AVX2 SIMD
+                 • L2 Neural Cross-Encoder Reranker
 ```
 
-TitanIR is a production-grade, high-throughput dual-engine hybrid retrieval system built with modern systems programming in Rust. It marries sparse lexical inverted search with dense vector graph traversal and two-stage re-ranking to deliver state-of-the-art retrieval relevance under strict sub-millisecond tail latency budgets.
+TitanSearch is a production-grade, high-throughput dual-engine hybrid retrieval system built with modern systems programming in Rust. It implements clean, standard algorithms for baseline simplicity and correctness (Standard Inverted Index BM25 + Dense Vector Cosine Similarity), while maintaining an extensible engineering roadmap ("Steps to Improve") for high-scale optimizations.
 
 ---
 
 ## Architecture Overview
 
+### 1. Active Baseline (Standard Algorithms)
+
 | Component | Technology | Implementation Details |
 |---|---|---|
-| **Document Storage** | Append-Only Flat File + `mmap` | Fixed-width offset table (`DocID * 8 bytes`) mapped directly into virtual address space for $O(1)$ zero-copy random access. |
-| **Lexical Engine** | Elias-Fano + Block-Max WAND | Zero-allocation Porter Stemmer, 128-posting Elias-Fano compressed blocks with `max_doc_id` and `max_term_score`. Dynamically prunes up to 90% of blocks. |
-| **Dense Engine** | SQ8 + Multi-Layer HNSW | 8-bit Scalar Quantization cutting RAM from 1.54 GB down to 384 MB per 1M docs (-75%). Multi-layer graph traversal with heuristic diversity edge selection. |
-| **L1 Fusion** | Reciprocal Rank Fusion (RRF) | Normalization-free candidate merging: $RRF\_Score(d) = \frac{1}{60 + \text{rank}_{\text{lex}}(d)} + \frac{1}{60 + \text{rank}_{\text{dense}}(d)}$. |
-| **L2 Reranker** | Neural Cross-Encoder | Deep cross-attention scoring between `(Query, DocText)` token pairs on the top 50 candidates, lifting nDCG@10 to 0.671 (+36.4% over BM25). |
-| **Evaluation** | Python 3.11+ / Matplotlib | Standard MS MARCO dev benchmark suite computing nDCG@10, MRR@10, Recall@10, and p50/p95/p99 latency distributions. |
-| **Showcase App** | React + Vite + Tailwind CSS | Interactive dashboard with real-time hybrid search, Block-Max WAND simulator, HNSW 3D/2D visualizer, SQ8 calculator, and live load stress tester. |
+| **Document Storage** | Append-Only Flat File + `mmap` | Fixed-width offset table (`DocID * 8 bytes`) mapped directly into virtual memory for $O(1)$ zero-copy string access. |
+| **Lexical Engine** | Standard Inverted Index + BM25 | Zero-allocation Porter Stemmer, posting lists with term frequency and document length, standard Robertson-Spärck Jones BM25 ($k_1=1.2, b=0.75$). |
+| **Dense Engine** | Dense Vector Space + Cosine Similarity | 384-dimensional dense semantic vectors with exact normalized dot product (cosine similarity) for 100% recall without graph distortion. |
+| **Hybrid Fusion** | Linear Score Combination & RRF | Predictable interpolation: $\text{Score}(d) = \alpha \cdot \text{BM25}_{\text{norm}}(d) + (1 - \alpha) \cdot \text{Cosine}(d)$ or Reciprocal Rank Fusion. |
 
----
+### 2. Steps to Improve: Optimization Roadmap (TODO)
+
+| Optimization Step | Targeted Area | Algorithmic Enhancement |
+|---|---|---|
+| **Block-Max WAND (BMW)** | Lexical Pruning | Split posting lists into 128-doc blocks with precomputed maximum BM25 bounds. Skip non-competitive blocks using dynamic threshold $\theta$, cutting latency by 5–10x. |
+| **Elias-Fano Bitvectors** | Index Compression | Compress sorted DocIDs to ~8 bits/integer with $O(1)$ random jumps using CPU `select64` and `popcount` hardware instructions. |
+| **HNSW Proximity Graphs** | Vector Indexing | Replace flat $O(N)$ vector scan with a multi-layer graph for logarithmic $O(\log N)$ approximate nearest neighbor beam search. |
+| **Scalar Quantization (SQ8)** | Memory & SIMD | Convert 32-bit floats to 8-bit unsigned integers (-75% RAM), executing 32 coordinate multiplications per cycle with AVX2 SIMD intrinsics. |
+| **Neural Cross-Encoder** | L2 Reranking | Embed ONNX Runtime C bindings (`bge-reranker-base`) for full token cross-attention on top-50 candidates, lifting nDCG@10 by +13.9%. |
 
 ## Workspace Structure
 

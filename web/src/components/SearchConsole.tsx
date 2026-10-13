@@ -98,7 +98,7 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
               <span className="text-[#ea4335] ml-1 font-medium">Search</span>
             </span>
             <div className="mt-2 text-xs font-mono uppercase tracking-wider text-[#70757a]">
-              Full-Text & Vector Search Engine (TitanSearch) · MS MARCO 8.8M Dataset
+              Hybrid Search Engine · Standard BM25 & Dense Vector Cosine Similarity
             </div>
           </div>
 
@@ -247,7 +247,7 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
               }`}
             >
               <GitBranch className="h-4 w-4" />
-              Dense (SQ8 HNSW)
+              Dense (Cosine k-NN)
             </button>
 
             {onNavigateTab && (
@@ -422,7 +422,7 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
 
               {/* Description */}
               <p className="text-xs text-[#3c4043] leading-relaxed">
-                TitanSearch combines <strong>SIMD Elias-Fano Block-Max WAND</strong>, <strong>SQ8 Quantized HNSW</strong>, and <strong>L2 Cross-Encoder reranking</strong> in native Rust to serve MS MARCO benchmark queries in sub-milliseconds.
+                TitanSearch unites <strong>Standard Inverted Index BM25</strong> with <strong>Dense Vector Cosine Similarity</strong> and <strong>Linear Hybrid Fusion</strong> in native Rust. Advanced algorithms (Block-Max WAND, SQ8, and HNSW) are preserved on the optimization roadmap (TODO).
               </p>
 
               {/* Live Query Telemetry */}
@@ -436,24 +436,16 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
                     <span className="font-bold text-[#137333]">{response.timing.total_ms} ms</span>
                   </div>
                   <div className="flex justify-between text-[#5f6368]">
-                    <span>Lexical WAND:</span>
+                    <span>Lexical (BM25):</span>
                     <span>{response.timing.lexical_ms} ms</span>
                   </div>
                   <div className="flex justify-between text-[#5f6368]">
-                    <span>Dense HNSW:</span>
+                    <span>Dense (Cosine):</span>
                     <span>{response.timing.dense_ms} ms</span>
                   </div>
                   <div className="flex justify-between text-[#5f6368]">
-                    <span>L2 Rerank:</span>
-                    <span>{response.timing.rerank_ms} ms</span>
-                  </div>
-                  <div className="flex justify-between text-[#5f6368] border-t border-[#dadce0] pt-1">
-                    <span>Blocks Skipped:</span>
-                    <span className="text-[#1a73e8]">{response.metrics.blocks_skipped} / {response.metrics.blocks_skipped + response.metrics.blocks_evaluated}</span>
-                  </div>
-                  <div className="flex justify-between text-[#5f6368]">
-                    <span>Pruning Efficiency:</span>
-                    <span className="text-[#137333] font-semibold">{response.metrics.pruning_ratio_pct.toFixed(1)}%</span>
+                    <span>Hybrid Fusion:</span>
+                    <span>{response.timing.fusion_ms} ms</span>
                   </div>
                 </div>
               )}
@@ -465,16 +457,24 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
                   <span className="font-medium text-[#202124]">Rust 2021 Edition</span>
                 </div>
                 <div className="flex justify-between">
+                  <span className="text-[#70757a]">Lexical Baseline:</span>
+                  <span className="font-medium text-[#202124]">Standard BM25 (RSJ)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#70757a]">Dense Baseline:</span>
+                  <span className="font-medium text-[#202124]">Cosine Similarity (384d)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#70757a]">Roadmap (TODO):</span>
+                  <span className="font-medium text-[#b06000]">WAND · SQ8 · HNSW</span>
+                </div>
+                <div className="flex justify-between">
                   <span className="text-[#70757a]">Corpus:</span>
                   <span className="font-medium text-[#202124]">MS MARCO (8.8M Docs)</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#70757a]">Author Context:</span>
                   <span className="font-medium text-[#1a73e8]">Mozilla Engineer</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[#70757a]">Evaluation nDCG:</span>
-                  <span className="font-medium text-[#137333]">0.671 (+36% over BM25)</span>
                 </div>
               </div>
 

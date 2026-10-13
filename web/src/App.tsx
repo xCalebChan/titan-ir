@@ -86,7 +86,7 @@ export const App: React.FC = () => {
             <span>· High-Performance Full-Text & Vector Search Engine</span>
           </div>
           <div className="hidden sm:block text-[11px] text-[#70757a] font-mono">
-            Rust 2021 · SIMD Elias-Fano · SQ8 HNSW · ONNX Runtime
+            Rust 2021 · Standard BM25 · Dense Cosine k-NN · Extensible Roadmap
           </div>
         </div>
 
