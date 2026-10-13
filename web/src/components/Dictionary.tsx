@@ -1,35 +1,42 @@
 import React, { useState, useMemo } from 'react';
-import { Search, BookOpen, ChevronRight, Hash, Code2, Calculator, BookMarked, ExternalLink } from 'lucide-react';
-import { DICTIONARY_TERMS, CATEGORIES } from '../dictionaryData';
+import { Search, BookOpen, ChevronRight, Hash, Code2, Calculator, BookMarked, CheckCircle2, Sparkles, Filter } from 'lucide-react';
+import { DICTIONARY_TERMS, CATEGORIES, ALGORITHM_STATUS_FILTERS } from '../dictionaryData';
 import { MathFormula } from './MathFormula';
 
 export const Dictionary: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedTermId, setSelectedTermId] = useState<string>(DICTIONARY_TERMS[0].id);
 
   const filteredTerms = useMemo(() => {
     return DICTIONARY_TERMS.filter((term) => {
       const matchesCategory = selectedCategory === 'all' || term.category === selectedCategory;
+      const matchesStatus = selectedStatus === 'all' || term.algorithmType === selectedStatus;
+      
       const q = searchQuery.toLowerCase().trim();
-      if (!q) return matchesCategory;
+      if (!q) return matchesCategory && matchesStatus;
 
       const matchesSearch =
         term.term.toLowerCase().includes(q) ||
         (term.acronym && term.acronym.toLowerCase().includes(q)) ||
         term.oneLiner.toLowerCase().includes(q) ||
         term.definition.toLowerCase().includes(q) ||
+        (term.roadmapContext && term.roadmapContext.toLowerCase().includes(q)) ||
         term.example.title.toLowerCase().includes(q) ||
         term.engineImplementation.file.toLowerCase().includes(q);
 
-      return matchesCategory && matchesSearch;
+      return matchesCategory && matchesStatus && matchesSearch;
     });
-  }, [searchQuery, selectedCategory]);
+  }, [searchQuery, selectedCategory, selectedStatus]);
 
   const activeTerm = useMemo(() => {
     const found = DICTIONARY_TERMS.find((t) => t.id === selectedTermId);
     return found || filteredTerms[0] || DICTIONARY_TERMS[0];
   }, [selectedTermId, filteredTerms]);
+
+  const standardCount = DICTIONARY_TERMS.filter(t => t.algorithmType === 'standard').length;
+  const roadmapCount = DICTIONARY_TERMS.filter(t => t.algorithmType === 'roadmap').length;
 
   return (
     <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 font-sans bg-white text-[#202124]">
@@ -42,56 +49,83 @@ export const Dictionary: React.FC = () => {
               Information Retrieval Glossary
             </div>
             <h1 className="text-2xl sm:text-3xl font-normal text-[#202124] tracking-tight">
-              TitanSearch Technical Dictionary
+              Technical Search Dictionary
             </h1>
             <p className="mt-1 text-sm text-[#5f6368] max-w-2xl leading-relaxed">
-              Formal definitions, engineering mechanisms, LaTeX equations, real-world numerical calculation walkthroughs, and native Rust implementation links.
+              Definitions, mechanisms, LaTeX formulas, and step-by-step calculations—categorized into <strong className="text-[#137333] font-medium">Standard Baseline Algorithms</strong> and <strong className="text-[#1a73e8] font-medium">Steps to Improve (TODO Roadmap)</strong>.
             </p>
           </div>
 
-          <div className="text-xs text-[#70757a] font-mono text-left sm:text-right">
-            <div>Indexed Concepts: <span className="text-[#202124] font-semibold">{DICTIONARY_TERMS.length}</span></div>
-            <div>Corpus: <span className="text-[#5f6368]">MS MARCO Benchmark</span></div>
+          <div className="flex sm:flex-col gap-3 sm:gap-1 text-xs text-[#70757a] font-mono sm:text-right">
+            <div>Total Concepts: <span className="text-[#202124] font-semibold">{DICTIONARY_TERMS.length}</span></div>
+            <div className="text-[#137333]">Standard Baselines: <span className="font-semibold">{standardCount}</span></div>
+            <div className="text-[#1a73e8]">Roadmap (TODO): <span className="font-semibold">{roadmapCount}</span></div>
           </div>
         </div>
 
-        {/* Search & Category Filter Bar */}
-        <div className="mt-5 flex flex-col md:flex-row gap-3">
+        {/* Search & Filter Controls */}
+        <div className="mt-5 space-y-3">
           {/* Search Input */}
-          <div className="relative flex-1">
+          <div className="relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#70757a] pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search concepts, equations, files, or algorithms (e.g. Elias-Fano, BM25, AVX2)..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-full border border-[#dfe1e5] hover:border-[#dfe1e5] focus:outline-none focus:border-transparent google-search-shadow text-sm text-[#202124]"
+              placeholder="Search concepts, equations, files, or algorithms (e.g. BM25, Cosine, Elias-Fano, HNSW)..."
+              className="w-full pl-10 pr-16 py-2.5 rounded-full border border-[#dfe1e5] hover:border-[#dfe1e5] focus:outline-none focus:border-transparent google-search-shadow text-sm text-[#202124]"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-[#70757a] hover:text-[#202124]"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-[#70757a] hover:text-[#202124]"
               >
                 Clear
               </button>
             )}
           </div>
 
-          {/* Category Tabs */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`px-3 py-1.5 rounded-full text-xs font-normal whitespace-nowrap transition-colors ${
-                  selectedCategory === cat.id
-                    ? 'bg-[#1a73e8] text-white font-medium'
-                    : 'bg-[#f8f9fa] border border-[#dadce0] text-[#3c4043] hover:bg-[#f1f3f4]'
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
+          {/* Dual Filter Rows: Algorithm Status + Category */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-1">
+            {/* Algorithm Status Filter (Standard Baseline vs Roadmap TODO) */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
+              <span className="text-xs text-[#70757a] flex items-center gap-1 mr-1 shrink-0 font-medium">
+                <Filter className="h-3 w-3" /> Status:
+              </span>
+              {ALGORITHM_STATUS_FILTERS.map((status) => (
+                <button
+                  key={status.id}
+                  onClick={() => setSelectedStatus(status.id)}
+                  className={`px-3 py-1.5 rounded-full text-xs transition-colors whitespace-nowrap ${
+                    selectedStatus === status.id
+                      ? 'bg-[#202124] text-white font-medium'
+                      : 'bg-[#f8f9fa] border border-[#dadce0] text-[#3c4043] hover:bg-[#f1f3f4]'
+                  }`}
+                >
+                  {status.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Category Filter */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
+              <span className="text-xs text-[#70757a] mr-1 shrink-0 font-medium">
+                Category:
+              </span>
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`px-2.5 py-1 rounded-full text-xs transition-colors whitespace-nowrap ${
+                    selectedCategory === cat.id
+                      ? 'bg-[#1a73e8] text-white font-medium'
+                      : 'bg-[#f8f9fa] border border-[#dadce0] text-[#3c4043] hover:bg-[#f1f3f4]'
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -100,23 +134,24 @@ export const Dictionary: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Term Selector List */}
         <div className="lg:col-span-4 flex flex-col gap-2 max-h-[750px] overflow-y-auto pr-1">
-          <div className="text-xs font-mono uppercase tracking-wider text-[#70757a] mb-1 px-1">
-            Showing {filteredTerms.length} of {DICTIONARY_TERMS.length} Terms
+          <div className="text-xs font-mono uppercase tracking-wider text-[#70757a] mb-1 px-1 flex items-center justify-between">
+            <span>Showing {filteredTerms.length} of {DICTIONARY_TERMS.length} Terms</span>
           </div>
 
           {filteredTerms.length === 0 ? (
             <div className="p-6 text-center border border-[#dadce0] bg-[#f8f9fa] rounded-xl text-[#70757a] text-sm">
               No technical terms match &quot;{searchQuery}&quot;.
               <button
-                onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }}
+                onClick={() => { setSearchQuery(''); setSelectedCategory('all'); setSelectedStatus('all'); }}
                 className="mt-3 block mx-auto text-xs text-[#1a73e8] underline"
               >
-                Reset filters
+                Reset all filters
               </button>
             </div>
           ) : (
             filteredTerms.map((term) => {
               const isSelected = activeTerm.id === term.id;
+              const isStandard = term.algorithmType === 'standard';
               return (
                 <button
                   key={term.id}
@@ -127,20 +162,31 @@ export const Dictionary: React.FC = () => {
                       : 'bg-white border-[#dadce0] hover:bg-[#f8f9fa] hover:border-[#bdc1c6]'
                   }`}
                 >
-                  <div className="flex items-center justify-between gap-2 mb-1">
+                  <div className="flex items-center justify-between gap-2 mb-1.5">
                     <span className={`text-sm font-medium tracking-tight ${isSelected ? 'text-[#1a73e8]' : 'text-[#202124]'}`}>
                       {term.term}
                     </span>
-                    {term.acronym && (
-                      <span className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-[#f1f3f4] text-[#5f6368] border border-[#dadce0]">
-                        {term.acronym}
-                      </span>
-                    )}
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {isStandard ? (
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#e6f4ea] text-[#137333] border border-[#ceead6]">
+                          Standard
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#e8f0fe] text-[#1a73e8] border border-[#d2e3fc]">
+                          TODO
+                        </span>
+                      )}
+                      {term.acronym && (
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#f1f3f4] text-[#5f6368] border border-[#dadce0]">
+                          {term.acronym}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <p className="text-xs text-[#5f6368] line-clamp-2 leading-relaxed">
                     {term.oneLiner}
                   </p>
-                  <div className="mt-2 flex items-center justify-between text-[11px] font-mono text-[#70757a]">
+                  <div className="mt-2.5 flex items-center justify-between text-[11px] font-mono text-[#70757a]">
                     <span className="capitalize">{term.category}</span>
                     <span className="text-[#1a73e8] flex items-center gap-0.5">
                       Inspect <ChevronRight className="h-3 w-3" />
@@ -158,7 +204,16 @@ export const Dictionary: React.FC = () => {
             <div className="border border-[#dadce0] bg-white rounded-2xl p-6 sm:p-8 space-y-6 google-card-shadow">
               {/* Header Badge & Title */}
               <div className="border-b border-[#dadce0] pb-4">
-                <div className="flex flex-wrap items-center gap-2 mb-2">
+                <div className="flex flex-wrap items-center gap-2 mb-2.5">
+                  {activeTerm.algorithmType === 'standard' ? (
+                    <span className="text-xs font-mono font-medium px-2 py-0.5 rounded bg-[#e6f4ea] text-[#137333] border border-[#ceead6] flex items-center gap-1">
+                      <CheckCircle2 className="h-3 w-3" /> Standard Baseline Algorithm
+                    </span>
+                  ) : (
+                    <span className="text-xs font-mono font-medium px-2 py-0.5 rounded bg-[#e8f0fe] text-[#1a73e8] border border-[#d2e3fc] flex items-center gap-1">
+                      <Sparkles className="h-3 w-3" /> Step to Improve · Roadmap (TODO)
+                    </span>
+                  )}
                   <span className="text-xs font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-[#f1f3f4] text-[#3c4043] border border-[#dadce0]">
                     {activeTerm.category}
                   </span>
@@ -179,6 +234,33 @@ export const Dictionary: React.FC = () => {
                   {activeTerm.oneLiner}
                 </p>
               </div>
+
+              {/* Status Context Banner */}
+              {activeTerm.algorithmType === 'standard' ? (
+                <div className="flex items-start gap-3 p-3.5 bg-[#f6fbf7] border border-[#ceead6] rounded-xl text-xs">
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-[#1e8e3e] mt-0.5" />
+                  <div>
+                    <div className="font-semibold uppercase tracking-wider text-[11px] text-[#137333] mb-0.5">
+                      Active Core Engine Baseline
+                    </div>
+                    <p className="text-[#3c4043] leading-relaxed">
+                      {activeTerm.roadmapContext || 'Standard industry algorithm deployed as the active retrieval baseline for simplicity, predictability, and reliable search relevance.'}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-start gap-3 p-3.5 bg-[#f8fafd] border border-[#d2e3fc] rounded-xl text-xs">
+                  <Sparkles className="h-4 w-4 shrink-0 text-[#1a73e8] mt-0.5" />
+                  <div>
+                    <div className="font-semibold uppercase tracking-wider text-[11px] text-[#1a73e8] mb-0.5">
+                      Optimization Roadmap (Step to Improve / TODO)
+                    </div>
+                    <p className="text-[#3c4043] leading-relaxed">
+                      {activeTerm.roadmapContext || 'Planned engineering optimization to scale index compression, query pruning, or neural re-ranking beyond standard baselines.'}
+                    </p>
+                  </div>
+                </div>
+              )}
 
               {/* Rigorous Definition */}
               <div>
@@ -267,12 +349,12 @@ export const Dictionary: React.FC = () => {
                 </div>
               </div>
 
-              {/* TitanSearch Native Implementation Blueprint */}
+              {/* Engine Implementation Blueprint */}
               <div className="pt-2 border-t border-[#dadce0]">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-[#f8f9fa] border border-[#dadce0] rounded-xl">
                   <div>
                     <div className="text-[11px] font-mono uppercase tracking-wider text-[#70757a] mb-0.5">
-                      TitanSearch Native Rust Implementation
+                      {activeTerm.algorithmType === 'standard' ? 'Active Engine Implementation' : 'Planned Optimization Target'}
                     </div>
                     <div className="font-mono text-xs text-[#202124] font-medium">
                       {activeTerm.engineImplementation.crate}/{activeTerm.engineImplementation.file}
@@ -282,7 +364,7 @@ export const Dictionary: React.FC = () => {
                     </p>
                   </div>
                   <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-white border border-[#dadce0] text-[#3c4043] whitespace-nowrap self-start sm:self-center">
-                    Rust 2021
+                    {activeTerm.algorithmType === 'standard' ? 'Rust (Active)' : 'Rust (Roadmap)'}
                   </span>
                 </div>
               </div>
