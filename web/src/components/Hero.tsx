@@ -23,7 +23,7 @@ export const Hero: React.FC<HeroProps> = ({
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-tight">
-            TitanIR Systems Engine
+            TitanSearch Systems Engine
           </h1>
 
           <p className="mt-3.5 text-base sm:text-lg text-zinc-400 font-normal leading-relaxed">

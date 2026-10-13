@@ -76,7 +76,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="text-[#34a853] font-semibold">n</span>
               <span className="text-[#ea4335] font-semibold ml-0.5">Search</span>
               <span className="text-[10px] font-mono text-[#70757a] ml-1.5 px-1.5 py-0.5 rounded bg-[#f1f3f4] border border-[#dadce0] hidden sm:inline">
-                TitanIR
+                Rust
               </span>
             </div>
 
@@ -146,7 +146,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 onClick={() => setShowAppLauncher(!showAppLauncher)}
                 className="p-2 rounded-full hover:bg-[#f1f3f4] text-[#5f6368] transition-colors focus:outline-none"
-                title="TitanIR Apps & Tools"
+                title="TitanSearch Apps & Tools"
               >
                 <LayoutGrid className="h-5 w-5" />
               </button>

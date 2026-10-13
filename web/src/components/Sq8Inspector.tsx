@@ -71,7 +71,7 @@ export const Sq8Inspector: React.FC = () => {
           </div>
 
           <div className="p-4 rounded-xl bg-[#e8f0fe] border border-[#1a73e8]">
-            <div className="text-[11px] uppercase text-[#1a73e8]">Quantized SQ8 RAM (TitanIR)</div>
+            <div className="text-[11px] uppercase text-[#1a73e8]">Quantized SQ8 RAM (TitanSearch)</div>
             <div className="text-2xl font-bold text-[#1a73e8] mt-1 tabular-nums">{sq8Mb} MB</div>
             <div className="text-[11px] text-[#1a73e8] mt-1">1 byte × 384 dims × {corpusSize.toLocaleString()} docs</div>
           </div>

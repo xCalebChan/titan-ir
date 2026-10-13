@@ -20,7 +20,7 @@ export const Dictionary: React.FC = () => {
         term.oneLiner.toLowerCase().includes(q) ||
         term.definition.toLowerCase().includes(q) ||
         term.example.title.toLowerCase().includes(q) ||
-        term.titanIrImplementation.file.toLowerCase().includes(q);
+        term.engineImplementation.file.toLowerCase().includes(q);
 
       return matchesCategory && matchesSearch;
     });
@@ -42,7 +42,7 @@ export const Dictionary: React.FC = () => {
               Information Retrieval Glossary
             </div>
             <h1 className="text-2xl sm:text-3xl font-normal text-[#202124] tracking-tight">
-              TitanIR Technical Dictionary
+              TitanSearch Technical Dictionary
             </h1>
             <p className="mt-1 text-sm text-[#5f6368] max-w-2xl leading-relaxed">
               Formal definitions, engineering mechanisms, LaTeX equations, real-world numerical calculation walkthroughs, and native Rust implementation links.
@@ -267,18 +267,18 @@ export const Dictionary: React.FC = () => {
                 </div>
               </div>
 
-              {/* TitanIR Native Implementation Blueprint */}
+              {/* TitanSearch Native Implementation Blueprint */}
               <div className="pt-2 border-t border-[#dadce0]">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-[#f8f9fa] border border-[#dadce0] rounded-xl">
                   <div>
                     <div className="text-[11px] font-mono uppercase tracking-wider text-[#70757a] mb-0.5">
-                      TitanIR Native Rust Implementation
+                      TitanSearch Native Rust Implementation
                     </div>
                     <div className="font-mono text-xs text-[#202124] font-medium">
-                      {activeTerm.titanIrImplementation.crate}/{activeTerm.titanIrImplementation.file}
+                      {activeTerm.engineImplementation.crate}/{activeTerm.engineImplementation.file}
                     </div>
                     <p className="text-xs text-[#5f6368] mt-0.5">
-                      {activeTerm.titanIrImplementation.role}
+                      {activeTerm.engineImplementation.role}
                     </p>
                   </div>
                   <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-white border border-[#dadce0] text-[#3c4043] whitespace-nowrap self-start sm:self-center">

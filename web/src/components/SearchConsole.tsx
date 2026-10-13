@@ -98,7 +98,7 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
               <span className="text-[#ea4335] ml-1 font-medium">Search</span>
             </span>
             <div className="mt-2 text-xs font-mono uppercase tracking-wider text-[#70757a]">
-              Full-Text & Vector Search Engine (TitanIR) · MS MARCO 8.8M Dataset
+              Full-Text & Vector Search Engine (TitanSearch) · MS MARCO 8.8M Dataset
             </div>
           </div>
 
@@ -356,7 +356,7 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
                 <div key={hit.doc_id} className="max-w-2xl font-sans">
                   {/* Google Breadcrumb / URL */}
                   <div className="flex items-center gap-2 text-xs text-[#202124] mb-1">
-                    <span className="text-[#70757a] truncate">https://titanir.engine › doc › #{hit.doc_id}</span>
+                    <span className="text-[#70757a] truncate">https://titansearch.engine › doc › #{hit.doc_id}</span>
                   </div>
 
                   {/* Google Blue Link Title */}
@@ -413,7 +413,7 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
                   Engine Knowledge Panel
                 </span>
                 <h3 className="text-xl font-normal text-[#202124] mt-0.5">
-                  TitanSearch Engine (TitanIR)
+                  TitanSearch Engine
                 </h3>
                 <p className="text-xs text-[#5f6368] mt-0.5">
                   Full-Text & Vector Search Platform
@@ -422,7 +422,7 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
 
               {/* Description */}
               <p className="text-xs text-[#3c4043] leading-relaxed">
-                TitanIR combines <strong>SIMD Elias-Fano Block-Max WAND</strong>, <strong>SQ8 Quantized HNSW</strong>, and <strong>L2 Cross-Encoder reranking</strong> in native Rust to serve MS MARCO benchmark queries in sub-milliseconds.
+                TitanSearch combines <strong>SIMD Elias-Fano Block-Max WAND</strong>, <strong>SQ8 Quantized HNSW</strong>, and <strong>L2 Cross-Encoder reranking</strong> in native Rust to serve MS MARCO benchmark queries in sub-milliseconds.
               </p>
 
               {/* Live Query Telemetry */}
@@ -485,7 +485,7 @@ export const SearchConsole: React.FC<SearchConsoleProps> = ({
                     onClick={() => onNavigateTab('about')}
                     className="text-left text-[#1a0dab] hover:underline flex items-center justify-between"
                   >
-                    <span>Read About TitanIR & Dataset</span>
+                    <span>Read About TitanSearch & Dataset</span>
                     <ArrowRight className="h-3 w-3" />
                   </button>
                   <button

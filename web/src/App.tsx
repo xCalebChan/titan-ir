@@ -82,8 +82,8 @@ export const App: React.FC = () => {
       <footer className="bg-[#f2f2f2] border-t border-[#dadce0] text-xs text-[#70757a] font-sans">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 border-b border-[#dadce0] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="font-medium text-[#3c4043]">TitanIR</span>
-            <span>· High-Throughput Hybrid Retrieval Engine</span>
+            <span className="font-medium text-[#3c4043]">TitanSearch</span>
+            <span>· High-Performance Full-Text & Vector Search Engine</span>
           </div>
           <div className="hidden sm:block text-[11px] text-[#70757a] font-mono">
             Rust 2021 · SIMD Elias-Fano · SQ8 HNSW · ONNX Runtime
@@ -93,7 +93,7 @@ export const App: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-6">
             <button onClick={() => setActiveTab('about')} className="hover:text-[#202124]">
-              About TitanIR
+              About TitanSearch
             </button>
             <button onClick={() => setActiveTab('dictionary')} className="hover:text-[#202124]">
               Dictionary

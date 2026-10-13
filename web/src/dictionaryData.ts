@@ -15,7 +15,7 @@ export interface DictionaryTerm {
     walkthrough: string[];
     output: string;
   };
-  titanIrImplementation: {
+  engineImplementation: {
     crate: string;
     file: string;
     role: string;
@@ -61,7 +61,7 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
       ],
       output: 'Total footprint: 20 low bits + 11 high bits = 31 bits (~6.2 bits/integer), down from 160 bits (raw u32). 80.6% compression.'
     },
-    titanIrImplementation: {
+    engineImplementation: {
       crate: 'crates/index-core',
       file: 'src/elias_fano.rs',
       role: 'Compresses sorted posting DocIDs inside each 128-postings block and provides the fast next_geq binary jump iterator for Block-Max WAND.'
@@ -92,7 +92,7 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
       ],
       output: '128 document evaluations completely avoided with 0 floating point calculations, reducing query latency by 85%.'
     },
-    titanIrImplementation: {
+    engineImplementation: {
       crate: 'crates/lexical-engine',
       file: 'src/wand.rs',
       role: 'Core execution loop for lexical queries; maintains the Min-Heap, computes dynamic thresholds, and performs block-skipping.'
@@ -121,7 +121,7 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
       ],
       output: 'Final BM25 score contribution for term "compiler" on Doc #402: 7.339.'
     },
-    titanIrImplementation: {
+    engineImplementation: {
       crate: 'crates/lexical-engine',
       file: 'src/bm25.rs',
       role: 'Calculates exact document scores and establishes upper-bound score limits for inverted index blocks during indexing.'
@@ -151,7 +151,7 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
       ],
       output: 'Quantized vector slice: [57, 110, 217, 26] as u8 bytes. Storage reduced from 16 bytes (f32) to 4 bytes (u8).'
     },
-    titanIrImplementation: {
+    engineImplementation: {
       crate: 'crates/index-core',
       file: 'src/sq8.rs',
       role: 'Compresses offline document embeddings and executes AVX2 unrolled integer dot products during HNSW greedy beam search.'
@@ -180,7 +180,7 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
       ],
       output: 'Top 10 nearest semantic neighbor DocIDs found in 0.28 milliseconds after visiting only 142 total graph nodes.'
     },
-    titanIrImplementation: {
+    engineImplementation: {
       crate: 'crates/dense-engine',
       file: 'src/hnsw.rs',
       role: 'Constructs multi-layer graph index with heuristic diversity edge selection and executes multi-threaded greedy beam searches.'
@@ -208,7 +208,7 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
       ],
       output: 'Graph gains balanced routing pathways along both the X and Y axes instead of two redundant edges along the X axis.'
     },
-    titanIrImplementation: {
+    engineImplementation: {
       crate: 'crates/dense-engine',
       file: 'src/hnsw.rs',
       role: 'Implemented in HnswGraph::select_neighbors_heuristic to build connected graphs that maintain 98%+ recall.'
@@ -241,7 +241,7 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
       ],
       output: 'Doc A wins (0.031514 vs 0.021949) because it demonstrates strong consensus across both lexical and semantic channels, outranking Doc B.'
     },
-    titanIrImplementation: {
+    engineImplementation: {
       crate: 'crates/reranker',
       file: 'src/rrf.rs',
       role: 'Takes top-1,000 candidates from Block-Max WAND and top-1,000 from HNSW, merges and deduplicates them into top-50 candidates for L2 neural reranking.'
@@ -255,7 +255,7 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
     category: 'fusion',
     oneLiner: 'A deep transformer model that performs full token-to-token cross-attention between concatenated query and document sequences.',
     definition: 'A Cross-Encoder is a deep neural ranking architecture where a query and document are formatted into a single joint sequence ([CLS] Query [SEP] Document [SEP]) and passed through multi-layer bidirectional transformer attention heads. This allows every token in the query to directly attend to every token in the document, capturing nuanced semantic relationships, negation, and syntactic context that bi-encoders miss.',
-    mechanism: 'Because cross-attention has O((|Q| + |D|)^2) computational complexity, running it over millions of documents at query time is computationally infeasible. TitanIR uses a Two-Stage architecture: L1 (BM25 + HNSW + RRF) prunes the corpus down to the top 50 candidates in <1ms, and the Cross-Encoder scores only those 50 candidates in native code via ONNX Runtime.',
+    mechanism: 'Because cross-attention has O((|Q| + |D|)^2) computational complexity, running it over millions of documents at query time is computationally infeasible. TitanSearch uses a Two-Stage architecture: L1 (BM25 + HNSW + RRF) prunes the corpus down to the top 50 candidates in <1ms, and the Cross-Encoder scores only those 50 candidates in native code via ONNX Runtime.',
     mathFormula: 'S(Q, D) = \\sigma\\left(\\mathbf{W} \\cdot \\text{BERT}_{\\text{pool}}(\\text{[CLS]} \\circ Q \\circ \\text{[SEP]} \\circ D \\circ \\text{[SEP]})\\right)',
     mathExplanation: 'sigma is the sigmoid activation function; W is a linear projection layer mapped to a single scalar relevance logit; BERTpool is the pooled contextual representation of the [CLS] classification token.',
     example: {
@@ -270,7 +270,7 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
       ],
       output: 'Doc 2 is correctly promoted to Rank #1 while false-positive Doc 1 is demoted, providing a +13.9% boost in nDCG@10.'
     },
-    titanIrImplementation: {
+    engineImplementation: {
       crate: 'crates/reranker',
       file: 'src/cross_encoder.rs',
       role: 'Wraps native ONNX Runtime C API to execute neural cross-attention passes on the top 50 candidates from RRF.'
@@ -300,7 +300,7 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
       ],
       output: 'Document retrieved in 0.35ms via HNSW nearest neighbor graph navigation.'
     },
-    titanIrImplementation: {
+    engineImplementation: {
       crate: 'crates/dense-engine',
       file: 'src/embedder.rs',
       role: 'Generates 384-dimensional dense semantic vectors and normalizes them for HNSW indexing.'
@@ -313,8 +313,8 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
     acronym: 'mmap',
     category: 'systems',
     oneLiner: 'OS kernel-level virtual memory mapping for instant random document access without heap allocation.',
-    definition: 'Memory-Mapped I/O (mmap) maps a raw disk file directly into the process\'s virtual memory address space. In TitanIR, documents are stored in an append-only binary flat file alongside a fixed-width binary offset table (DocID * 8 bytes). Document strings are never loaded or retained in RAM heaps.',
-    mechanism: 'When a search query identifies winning DocIDs, TitanIR reads offset_table[DocID * 8] to obtain the 64-bit file offset and length. It dereferences the mmap byte slice directly as a string slice (&str). The operating system page cache fetches the 4KB memory page on-demand from SSD. When memory pressure increases, clean pages are discarded by the kernel without swap thrashing.',
+    definition: 'Memory-Mapped I/O (mmap) maps a raw disk file directly into the process\'s virtual memory address space. In TitanSearch, documents are stored in an append-only binary flat file alongside a fixed-width binary offset table (DocID * 8 bytes). Document strings are never loaded or retained in RAM heaps.',
+    mechanism: 'When a search query identifies winning DocIDs, TitanSearch reads offset_table[DocID * 8] to obtain the 64-bit file offset and length. It dereferences the mmap byte slice directly as a string slice (&str). The operating system page cache fetches the 4KB memory page on-demand from SSD. When memory pressure increases, clean pages are discarded by the kernel without swap thrashing.',
     mathFormula: '\\text{Byte Offset}(DocID) = \\text{offset\\_table}[DocID \\times 8], \\quad \\text{RAM Overhead} = 0 \\text{ bytes string heap}',
     mathExplanation: 'For 1,000,000 documents, the offset table occupies exactly 8 MB of RAM. 8.8 million documents (~3.2 GB of text) can be queried on a machine with only 1 GB of physical RAM.',
     example: {
@@ -329,7 +329,7 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
       ],
       output: 'Passage text retrieved in 0.8 microseconds with 0 heap allocations.'
     },
-    titanIrImplementation: {
+    engineImplementation: {
       crate: 'crates/index-core',
       file: 'src/doc_store.rs',
       role: 'Provides DocStore with mmap-backed read operations for serving search result payloads.'
@@ -343,7 +343,7 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
     category: 'systems',
     oneLiner: 'High-throughput systems architecture where query processing paths perform zero heap allocations.',
     definition: 'A zero-allocation hot loop is a systems design discipline where no calls to the general-purpose heap memory allocator (such as malloc, Box::new, Vec::push, or String::clone) occur during the execution of a user query. All scratch space, heaps, and score accumulators are preallocated in per-thread reuse arenas.',
-    mechanism: 'Dynamic memory allocation requires thread synchronization and locks in glibc/mimalloc, causing jitter and latency spikes under concurrent multi-core load. By using static array iterators, reusable scratch buffers, and fixed-capacity arrays (heapless/ArrayVec), TitanIR achieves flat latency profiles and eliminates garbage collection pauses.',
+    mechanism: 'Dynamic memory allocation requires thread synchronization and locks in glibc/mimalloc, causing jitter and latency spikes under concurrent multi-core load. By using static array iterators, reusable scratch buffers, and fixed-capacity arrays (heapless/ArrayVec), TitanSearch achieves flat latency profiles and eliminates garbage collection pauses.',
     mathFormula: '\\Delta \\text{Heap Allocated} = 0 \\text{ bytes per query}',
     mathExplanation: 'Under 10,000 QPS load across 16 CPU cores, zero-allocation engines prevent lock contention in jemalloc/glibc, reducing p99 tail latency from 25ms to <2ms.',
     example: {
@@ -352,13 +352,13 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
       input: '100,000 candidate documents scored during query traversal.',
       walkthrough: [
         'A naive engine allocates a new struct or heap vector for each candidate: 100,000 allocations -> severe memory allocator churn.',
-        'TitanIR pre-allocates a fixed array of size K = 10 on the thread stack.',
+        'TitanSearch pre-allocates a fixed array of size K = 10 on the thread stack.',
         'If candidate score <= heap.min(), drop immediately (0 work).',
         'If candidate score > heap.min(), replace root in-place and sift-down in O(log K) time without allocating any memory.'
       ],
       output: '100,000 candidates processed with 0 bytes allocated and 0 allocator locks.'
     },
-    titanIrImplementation: {
+    engineImplementation: {
       crate: 'crates/lexical-engine',
       file: 'src/wand.rs',
       role: 'Implements reusable ScoreHeap and iterator stacks across query worker threads.'
@@ -372,7 +372,7 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
     category: 'systems',
     oneLiner: 'CPU vector hardware instructions executing parallel operations across 256-bit registers in a single cycle.',
     definition: 'Single Instruction, Multiple Data (SIMD) intrinsics are specialized CPU instructions exposed in Rust via core::arch::x86_64. AVX2 provides 256-bit wide registers (YMM0–YMM15) capable of performing arithmetic on up to thirty-two 8-bit integers or eight 32-bit floats simultaneously in a single processor cycle.',
-    mechanism: 'In TitanIR, AVX2 is used in two performance-critical operations: 1) Elias-Fano bitvector decoding via hardware popcount and bit-manipulation instructions (POPCNT, TZCNT, BLSR); and 2) SQ8 dot products using _mm256_maddubs_epi16 to compute 32 parallel 8-bit integer multiplications and additions per cycle.',
+    mechanism: 'In TitanSearch, AVX2 is used in two performance-critical operations: 1) Elias-Fano bitvector decoding via hardware popcount and bit-manipulation instructions (POPCNT, TZCNT, BLSR); and 2) SQ8 dot products using _mm256_maddubs_epi16 to compute 32 parallel 8-bit integer multiplications and additions per cycle.',
     mathFormula: '\\mathbf{YMM} = [v_1, v_2, \\dots, v_{32}] \\in \\mathbb{U}_8^{32}, \\quad \\text{Throughput} = 32 \\times \\text{Scalar}',
     mathExplanation: 'Computing the dot product of a 384-dimensional vector requires 384 multiplications and additions. With scalar code, this takes ~384 CPU cycles. With 256-bit AVX2, it completes in just 12 vector cycles.',
     example: {
@@ -388,7 +388,7 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
       ],
       output: '32 dimensions multiplied and accumulated in 3 CPU cycles instead of 96 cycles.'
     },
-    titanIrImplementation: {
+    engineImplementation: {
       crate: 'crates/index-core',
       file: 'src/sq8.rs',
       role: 'Hardware-accelerates vector distance computations inside the inner loop of HNSW beam search.'
@@ -420,7 +420,7 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
       ],
       output: 'nDCG@5 = 0.500. If the system promoted the relevant doc to Rank 1, nDCG would jump to 1.000.'
     },
-    titanIrImplementation: {
+    engineImplementation: {
       crate: 'eval',
       file: 'run_msmarco_eval.py',
       role: 'Computes official TREC benchmark scores across the 6,980 dev query set to validate retrieval stage improvements.'
@@ -447,9 +447,9 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
         'Query 3 Reciprocal Rank: 1 / 8 = 0.125',
         'Compute Mean: (1.000 + 0.500 + 0.125) / 3 = 1.625 / 3 = 0.5417'
       ],
-      output: 'MRR@10 = 0.542. TitanIR achieves 0.698 MRR@10 on MS MARCO with Cross-Encoder reranking.'
+      output: 'MRR@10 = 0.542. TitanSearch achieves 0.698 MRR@10 on MS MARCO with Cross-Encoder reranking.'
     },
-    titanIrImplementation: {
+    engineImplementation: {
       crate: 'eval',
       file: 'run_msmarco_eval.py',
       role: 'Validates first-hit accuracy against MS MARCO qrels ground-truth.'
@@ -467,7 +467,7 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
     mathFormula: 'p_{X} = \\inf \\left\\{ t \\in \\mathbb{R} : P(\\text{Latency} \\le t) \\ge \\frac{X}{100} \\right\\}',
     mathExplanation: 'In distributed search engines, a single user query often fans out to 100 leaf shards. If shard p99 is 20ms, the chance that the user query experiences that 20ms delay is 1 - (0.99)^100 = 63.4%, making tail latency the true user-facing bottleneck.',
     example: {
-      title: 'Profiling TitanIR under 5,000 QPS load burst',
+      title: 'Profiling TitanSearch under 5,000 QPS load burst',
       description: 'Measuring latency distribution across 10,000 synthetic test queries.',
       input: '10,000 query execution times recorded with microsecond timestamps.',
       walkthrough: [
@@ -478,7 +478,7 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
       ],
       output: 'Sub-2ms p99 tail latency maintained under high-throughput concurrent search traffic.'
     },
-    titanIrImplementation: {
+    engineImplementation: {
       crate: 'benches',
       file: 'query_latency.rs',
       role: 'Criterion.rs microbenchmarking suite that profiles latency distributions under varying QPS loads.'
@@ -492,7 +492,7 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
     category: 'lexical',
     oneLiner: 'A zero-allocation suffix-stripping algorithm that reduces words to their morphological base form.',
     definition: 'The Porter Stemmer is an algorithmic rule-based stemmer designed by Martin Porter in 1980. It strips common English suffixes (such as "-ing", "-ed", "-ation", "-ment", "-s") using a five-step cascading state machine without requiring a massive dictionary in memory.',
-    mechanism: 'In TitanIR, the tokenizer stems terms in-place within a zero-allocation byte buffer. Words like "retrieval", "retrieving", and "retrieved" are all normalized to the common stem "retriev". This ensures documents containing morphological variants match query terms without requiring query expansion.',
+    mechanism: 'In TitanSearch, the tokenizer stems terms in-place within a zero-allocation byte buffer. Words like "retrieval", "retrieving", and "retrieved" are all normalized to the common stem "retriev". This ensures documents containing morphological variants match query terms without requiring query expansion.',
     mathFormula: '\\text{Stem}(\\text{"retrieval"}) = \\text{Stem}(\\text{"retrieving"}) = \\text{Stem}(\\text{"retrieved"}) = \\text{"retriev"}',
     mathExplanation: 'Stemming bridges lexical vocabulary mismatch while keeping the inverted index vocabulary size small and compact.',
     example: {
@@ -507,7 +507,7 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
       ],
       output: 'Normalized tokens: ["optim", "compil", "algorithm"] matched against inverted index in 4 microseconds.'
     },
-    titanIrImplementation: {
+    engineImplementation: {
       crate: 'crates/lexical-engine',
       file: 'src/tokenizer.rs',
       role: 'Zero-allocation tokenizer and stemmer that parses queries and documents into indexable term IDs.'
@@ -521,7 +521,7 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
     category: 'lexical',
     oneLiner: 'Core search data structure mapping dictionary terms to sorted lists of documents containing them.',
     definition: 'An Inverted Index is the foundational data structure of information retrieval. Rather than storing documents as collections of words (forward index), it maps every unique word (term) in the corpus to a "posting list" recording all documents that contain the word, along with term frequency and position metadata.',
-    mechanism: 'TitanIR structures posting lists into fixed 128-document blocks. Each block is compressed with Elias-Fano and annotated with metadata: max_doc_id and max_term_score. A global term dictionary maps string tokens to posting list memory offsets.',
+    mechanism: 'TitanSearch structures posting lists into fixed 128-document blocks. Each block is compressed with Elias-Fano and annotated with metadata: max_doc_id and max_term_score. A global term dictionary maps string tokens to posting list memory offsets.',
     mathFormula: '\\text{Term } t \\mapsto \\{ (DocID_1, TF_1), (DocID_2, TF_2), \\dots, (DocID_m, TF_m) \\}',
     mathExplanation: 'Sorted DocIDs allow linear and logarithmic intersection and union operations across multi-term queries in sub-millisecond time.',
     example: {
@@ -538,7 +538,7 @@ export const DICTIONARY_TERMS: DictionaryTerm[] = [
       ],
       output: 'Matching documents: [Doc 45, Doc 102] retrieved in 2 microseconds.'
     },
-    titanIrImplementation: {
+    engineImplementation: {
       crate: 'crates/lexical-engine',
       file: 'src/inverted_index.rs',
       role: 'Manages posting lists, term dictionary, and Elias-Fano compressed blocks.'
